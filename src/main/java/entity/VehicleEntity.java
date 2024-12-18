@@ -28,10 +28,16 @@ public class VehicleEntity {
     @Basic
     @Column(name = "idType")
     private Integer idType;
+
+
+    @ManyToOne
+    @JoinColumn(name = "ClientEntity_idClient", referencedColumnName = "idClient")
+    private ClientEntity client; // Cette relation pointe vers ClientEntity
+
     @Basic
     @Column(name = "horse_power")
     private Integer horsePower;
-    @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "vehicle_power_source")
     private VehicleType vehiclePowerSource;
 
@@ -45,6 +51,23 @@ public class VehicleEntity {
             return model; // Accès à modelName depuis ModelEntity
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "VehicleEntity{" +
+                "idVehicle=" + idVehicle +
+                ", nom de la voitur=" + model.getModelName() +
+                ", status='" + status + '\'' +
+                ", price=" + price +
+                ", countryOfOrigin='" + countryOfOrigin + '\'' +
+                ", idModel=" + idModel +
+                ", idType=" + idType +
+                ", client=" + client +
+                ", horsePower=" + horsePower +
+                ", vehiclePowerSource=" + vehiclePowerSource +
+                ", model=" + model.getBrandName() +
+                '}';
     }
 
     public int getIdVehicle() {

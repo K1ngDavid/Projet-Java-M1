@@ -2,6 +2,7 @@ package service;
 
 
 import entity.ClientEntity;
+import entity.VehicleEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
@@ -29,6 +30,24 @@ public class ClientService {
 
             // On suppose qu'un seul client correspond au nom
             return results.isEmpty() ? null : results.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<VehicleEntity> getVehiclesByClientId(int clientId) {
+        try {
+            // Rechercher le client
+            ClientEntity client = entityManager.find(ClientEntity.class, clientId);
+
+            // Vérifier si le client existe
+            if (client != null) {
+                // Retourner les véhicules associés
+                return client.getVehicles();
+            } else {
+                return null; // Aucun client trouvé
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return null;

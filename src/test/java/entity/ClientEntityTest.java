@@ -24,8 +24,10 @@ class ClientEntityTest {
     @Test
     void getIdClient() {
         client.setIdClient(1);
+
         assertEquals(1,client.getIdClient());
     }
+
 
 //    @Test
 //    void setIdClient() {

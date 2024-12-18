@@ -38,6 +38,12 @@ class ClientServiceTest {
     }
 
     @Test
+    void getVoituresByClient(){
+        ClientEntity client = entityManager.find(ClientEntity.class,1);
+        System.out.println(clientService.getVehiclesByClientId(client.getIdClient()));
+    }
+
+    @Test
     void getClientByName() {
         // Ajouter un client pour les tests
         ClientEntity client = new ClientEntity();

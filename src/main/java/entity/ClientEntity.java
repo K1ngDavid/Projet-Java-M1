@@ -1,10 +1,10 @@
 package entity;
 
+import entity.VehicleEntity;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "Client", schema = "LeTresBonCoin", catalog = "")
@@ -14,36 +14,49 @@ public class ClientEntity {
     @Column(name = "idClient")
     private int idClient;
 
+
+
+    // Relation avec VehicleEntity
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<VehicleEntity> vehicles = new ArrayList<>(); // Liste de véhicules associés à ce client
+
+    // Relation avec CommandEntity
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CommandEntity> commands;
+
     @Basic
     @Column(name = "name")
     private String name;
+
     @Basic
     @Column(name = "phoneNumber")
     private String phoneNumber;
+
     @Basic
     @Column(name = "email")
     private String email;
+
     @Basic
     @Column(name = "postalAddress")
     private String postalAddress;
+
     @Basic
     @Column(name = "creditCardNumber")
     private String creditCardNumber;
+
     @Basic
     @Column(name = "cveNumber")
     private String cveNumber;
 
-    @OneToMany
-    @JoinTable(name = "Vehicle")
-    Set<VehicleEntity> vehicleEntitySet;
-
+    // Getters et setters
     public int getIdClient() {
         return idClient;
     }
 
-    // Getters and Setters
+    public void setIdClient(int idClient) {
+        this.idClient = idClient;
+    }
+
     public List<CommandEntity> getCommands() {
         return commands;
     }
@@ -52,13 +65,12 @@ public class ClientEntity {
         this.commands = commands;
     }
 
-
-    public void setIdClient(int idClient) {
-        this.idClient = idClient;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public List<VehicleEntity> getVehicles() {
+        return vehicles;
     }
 
     public void setName(String name) {
@@ -89,32 +101,7 @@ public class ClientEntity {
         this.postalAddress = postalAddress;
     }
 
-    public String getCreditCardNumber() {
-        return creditCardNumber;
-    }
-
     public void setCreditCardNumber(String creditCardNumber) {
         this.creditCardNumber = creditCardNumber;
-    }
-
-    public String getCveNumber() {
-        return cveNumber;
-    }
-
-    public void setCveNumber(String cveNumber) {
-        this.cveNumber = cveNumber;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClientEntity that = (ClientEntity) o;
-        return this.idClient == that.idClient && Objects.equals(this.name, that.name) && Objects.equals(this.phoneNumber, that.phoneNumber) && Objects.equals(this.email, that.email) && Objects.equals(postalAddress, that.postalAddress) && Objects.equals(this.creditCardNumber, that.creditCardNumber) && Objects.equals(this.cveNumber, that.cveNumber);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idClient, name, phoneNumber, email, postalAddress, creditCardNumber, cveNumber);
     }
 }
