@@ -2,47 +2,43 @@ package entity;
 
 import jakarta.persistence.*;
 
-import java.util.Objects;
-
 @Entity
 @Table(name = "CommandLine", schema = "LeTresBonCoin", catalog = "")
-@IdClass(CommandLineEntityPK.class)
 public class CommandLineEntity {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    @Column(name = "idCommand")
-    private int idCommand;
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    @Column(name = "idVehicle")
-    private int idVehicle;
 
-    public int getIdCommand() {
-        return idCommand;
+    @EmbeddedId
+    private CommandLineEntityPK id;
+
+    @ManyToOne
+    @JoinColumn(name = "idCommand", referencedColumnName = "idCommand", insertable = false, updatable = false)
+    private CommandEntity command;
+
+    @ManyToOne
+    @JoinColumn(name = "idVehicle", referencedColumnName = "idVehicle", insertable = false, updatable = false)
+    private VehicleEntity vehicle;
+
+    // Getters and setters
+    public CommandLineEntityPK getId() {
+        return id;
     }
 
-    public void setIdCommand(int idCommand) {
-        this.idCommand = idCommand;
+    public void setId(CommandLineEntityPK id) {
+        this.id = id;
     }
 
-    public int getIdVehicle() {
-        return idVehicle;
+    public CommandEntity getCommand() {
+        return command;
     }
 
-    public void setIdVehicle(int idVehicle) {
-        this.idVehicle = idVehicle;
+    public void setCommand(CommandEntity command) {
+        this.command = command;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CommandLineEntity that = (CommandLineEntity) o;
-        return idCommand == that.idCommand && idVehicle == that.idVehicle;
+    public VehicleEntity getVehicle() {
+        return vehicle;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(idCommand, idVehicle);
+    public void setVehicle(VehicleEntity vehicle) {
+        this.vehicle = vehicle;
     }
 }

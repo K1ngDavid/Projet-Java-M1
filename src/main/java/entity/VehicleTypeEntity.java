@@ -1,5 +1,6 @@
 package entity;
 
+import enumerations.VehicleType;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -11,9 +12,9 @@ public class VehicleTypeEntity {
     @Id
     @Column(name = "idType")
     private int idType;
-    @Basic
+    @Enumerated(EnumType.STRING) // Utilisation du type énuméré
     @Column(name = "typeName")
-    private String typeName;
+    private VehicleType typeName;
 
     public int getIdType() {
         return idType;
@@ -23,11 +24,11 @@ public class VehicleTypeEntity {
         this.idType = idType;
     }
 
-    public String getTypeName() {
+    public VehicleType getTypeName() {
         return typeName;
     }
 
-    public void setTypeName(String typeName) {
+    public void setTypeName(VehicleType typeName) {
         this.typeName = typeName;
     }
 

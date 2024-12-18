@@ -2,7 +2,9 @@ package entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "Client", schema = "LeTresBonCoin", catalog = "")
@@ -11,6 +13,9 @@ public class ClientEntity {
     @Id
     @Column(name = "idClient")
     private int idClient;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CommandEntity> commands;
     @Basic
     @Column(name = "name")
     private String name;
@@ -30,9 +35,23 @@ public class ClientEntity {
     @Column(name = "cveNumber")
     private String cveNumber;
 
+    @OneToMany
+    @JoinTable(name = "Vehicle")
+    Set<VehicleEntity> vehicleEntitySet;
+
     public int getIdClient() {
         return idClient;
     }
+
+    // Getters and Setters
+    public List<CommandEntity> getCommands() {
+        return commands;
+    }
+
+    public void setCommands(List<CommandEntity> commands) {
+        this.commands = commands;
+    }
+
 
     public void setIdClient(int idClient) {
         this.idClient = idClient;
@@ -91,7 +110,7 @@ public class ClientEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ClientEntity that = (ClientEntity) o;
-        return idClient == that.idClient && Objects.equals(name, that.name) && Objects.equals(phoneNumber, that.phoneNumber) && Objects.equals(email, that.email) && Objects.equals(postalAddress, that.postalAddress) && Objects.equals(creditCardNumber, that.creditCardNumber) && Objects.equals(cveNumber, that.cveNumber);
+        return this.idClient == that.idClient && Objects.equals(this.name, that.name) && Objects.equals(this.phoneNumber, that.phoneNumber) && Objects.equals(this.email, that.email) && Objects.equals(postalAddress, that.postalAddress) && Objects.equals(this.creditCardNumber, that.creditCardNumber) && Objects.equals(this.cveNumber, that.cveNumber);
     }
 
     @Override

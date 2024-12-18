@@ -39,6 +39,7 @@ class CarEntityTest {
         assertEquals(3, carEntity.getNumberOfDoors());
     }
 
+
     @Test
     void testGetTransmissionType() {
         carEntity.setTransmissionType(TransmissionType.AUTOMATIC);

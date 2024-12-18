@@ -1,23 +1,20 @@
 package entity;
 
+import jakarta.persistence.Embeddable;
 import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Embeddable
 public class CommandLineEntityPK implements Serializable {
     @Column(name = "idCommand")
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idCommand;
+
     @Column(name = "idVehicle")
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idVehicle;
 
+    // Getters and setters
     public int getIdCommand() {
         return idCommand;
     }

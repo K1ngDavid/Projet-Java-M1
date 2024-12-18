@@ -1,5 +1,6 @@
 package entity;
 
+import enumerations.VehicleType;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -32,7 +33,7 @@ public class VehicleEntity {
     private Integer horsePower;
     @Basic
     @Column(name = "vehicle_power_source")
-    private Object vehiclePowerSource;
+    private VehicleType vehiclePowerSource;
 
     public int getIdVehicle() {
         return idVehicle;
@@ -94,7 +95,7 @@ public class VehicleEntity {
         return vehiclePowerSource;
     }
 
-    public void setVehiclePowerSource(Object vehiclePowerSource) {
+    public void setVehiclePowerSource(VehicleType vehiclePowerSource) {
         this.vehiclePowerSource = vehiclePowerSource;
     }
 
