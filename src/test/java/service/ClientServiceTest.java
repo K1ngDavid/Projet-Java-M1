@@ -138,4 +138,11 @@ class ClientServiceTest {
         ClientEntity deletedClient = clientService.getClientById(clientToDelete.getIdClient());
         assertNull(deletedClient);
     }
+
+    @Test
+    void deleteClient2() {
+        clientService.deleteClient(68);
+        assertNull(clientService.getClientById(68));
+    }
+
 }

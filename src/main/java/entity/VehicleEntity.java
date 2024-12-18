@@ -23,7 +23,7 @@ public class VehicleEntity {
     @Column(name = "countryOfOrigin")
     private String countryOfOrigin;
     @Basic
-    @Column(name = "idModel")
+    @Column(name = "vehicule_model_id",insertable = false, updatable = false)
     private Integer idModel;
     @Basic
     @Column(name = "idType")
@@ -34,6 +34,18 @@ public class VehicleEntity {
     @Basic
     @Column(name = "vehicle_power_source")
     private VehicleType vehiclePowerSource;
+
+    @OneToOne
+    @JoinColumn(name = "vehicule_model_id", referencedColumnName = "idModel", foreignKey = @ForeignKey(name = "FK_Vehicle_Model"))
+    private ModelEntity model;
+
+//     Getter pour modelName (ajouté pour obtenir le nom du modèle via la relation)
+    public ModelEntity getModel() {
+        if (model != null) {
+            return model; // Accès à modelName depuis ModelEntity
+        }
+        return null;
+    }
 
     public int getIdVehicle() {
         return idVehicle;
