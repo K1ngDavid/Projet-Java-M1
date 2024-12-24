@@ -55,7 +55,7 @@ public class VehicleEntity {
 
     @Override
     public String toString() {
-        return "VehicleEntity{" +
+        return "VehicleEntity{\n" +
                 "idVehicle=" + idVehicle +
                 ", nom de la voitur=" + model.getModelName() +
                 ", status='" + status + '\'' +
@@ -67,7 +67,7 @@ public class VehicleEntity {
                 ", horsePower=" + horsePower +
                 ", vehiclePowerSource=" + vehiclePowerSource +
                 ", model=" + model.getBrandName() +
-                '}';
+                "\n}";
     }
 
     public int getIdVehicle() {

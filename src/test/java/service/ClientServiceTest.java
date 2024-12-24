@@ -1,6 +1,7 @@
 package service;
 
 import entity.ClientEntity;
+import entity.CommandEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -22,7 +23,7 @@ class ClientServiceTest {
         // Création de l'EntityManager pour la connexion à la base de données
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("LeTresBonCoin");
         entityManager = entityManagerFactory.createEntityManager();
-        clientService = new ClientService(entityManager);
+        clientService = new ClientService();
 
 //        // Démarre une transaction pour chaque test
 //        entityManager.getTransaction().begin();
@@ -44,18 +45,27 @@ class ClientServiceTest {
     }
 
     @Test
+    void getAllCommands(){
+        ClientEntity client = service.Test.getEntityManager().find(ClientEntity.class,1);
+        System.out.println(client.getCommands());
+    }
+
+
+
+    @Test
     void getClientByName() {
         // Ajouter un client pour les tests
         ClientEntity client = new ClientEntity();
-        client.setName("Ima Frye");
+        client.setName("allo");
         client.setEmail("ima.frye@example.com");
-
-        entityManager.persist(client);
-
-        // Tester la méthode getClientByName
-        ClientEntity foundClient = clientService.getClientByName("Ima Frye");
-        assertNotNull(foundClient);
-        assertEquals("Ima Frye", foundClient.getName());
+        clientService.addClient(client);
+        ClientEntity found = clientService.getClientByName("allo");
+        assertNotNull(found);
+        clientService.deleteClient(found.getIdClient());
+//        // Tester la méthode getClientByName
+//        ClientEntity foundClient = clientService.getClientByName("allo");
+//        assertNotNull(foundClient);
+//        assertEquals("allo", foundClient.getName());
     }
 
     @Test

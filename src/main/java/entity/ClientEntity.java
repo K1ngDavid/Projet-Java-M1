@@ -29,12 +29,20 @@ public class ClientEntity {
     private String name;
 
     @Basic
+    private String password;
+
+
+    @Basic
     @Column(name = "phoneNumber")
     private String phoneNumber;
 
     @Basic
     @Column(name = "email")
     private String email;
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     @Basic
     @Column(name = "postalAddress")

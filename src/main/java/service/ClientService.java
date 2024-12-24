@@ -1,19 +1,15 @@
 package service;
 
 
+import com.mysql.cj.xdevapi.Client;
 import entity.ClientEntity;
+import entity.CommandEntity;
 import entity.VehicleEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-public class ClientService {
-    private EntityManager entityManager;
-
-    // Constructeur
-    public ClientService(EntityManager entityManager){
-        this.entityManager = entityManager;
-    }
+public class ClientService extends Service{
 
     /**
      * Récupère un client par son nom.
@@ -49,6 +45,17 @@ public class ClientService {
                 return null; // Aucun client trouvé
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<CommandEntity> getCommandsByClientId(int clientId){
+        try{
+            ClientEntity client = entityManager.find(ClientEntity.class,clientId);
+            return client.getCommands();
+        }
+        catch (Exception e){
             e.printStackTrace();
             return null;
         }
@@ -221,6 +228,14 @@ public class ClientService {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    public boolean clientCanLogIn(String username,String pswd){
+        String hql = "SELECT c FROM ClientEntity c WHERE c.name = :username AND c.password = :pswd";
+        TypedQuery<ClientEntity> query = entityManager.createQuery(hql,ClientEntity.class);
+        query.setParameter("username",username);
+        query.setParameter("pswd",pswd);
+        return query.getResultList().size() > 0;
     }
 
 }

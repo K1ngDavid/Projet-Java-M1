@@ -1,6 +1,7 @@
 package service;
 
 import entity.ClientEntity;
+import entity.CommandEntity;
 import entity.VehicleEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,7 @@ class CarServiceTest {
 
     @BeforeEach
     void setUp() {
-        client = new ClientService(service.Test.getEntityManager());
+        client = new ClientService();
     }
 
     @AfterEach
@@ -29,4 +30,6 @@ class CarServiceTest {
         List<VehicleEntity> vehicles = client.getVehicles();
         vehicles.forEach(vehicle -> System.out.println(vehicle.getIdVehicle()));
     }
+
+
 }
