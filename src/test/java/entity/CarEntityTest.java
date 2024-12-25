@@ -18,6 +18,7 @@ class CarEntityTest {
     @Test
     void getIdVehicle() {
         carEntity.setIdVehicle(1);
+        System.out.println(carEntity);
         assertEquals(1, carEntity.getIdVehicle());
     }
 

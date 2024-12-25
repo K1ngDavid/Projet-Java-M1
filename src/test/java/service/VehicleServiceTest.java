@@ -1,6 +1,8 @@
 package service;
 
 import entity.VehicleEntity;
+import enumerations.PowerSource;
+import enumerations.TransmissionType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -17,21 +19,31 @@ public class VehicleServiceTest {
 
 
     private VehicleService vehicleService;
-    private EntityManager entityManager;
+
 
     @BeforeEach
     void setUp() {
         // Création de l'EntityManager pour la connexion à la base de données
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("LeTresBonCoin");
-        entityManager = entityManagerFactory.createEntityManager();
-        vehicleService = new VehicleService(entityManager);
+        vehicleService = new VehicleService();
     }
 
     @Test
     void getVehicleNameById() {
         // Récupération de la session Hibernate à partir de l'EntityManager
         VehicleEntity vehicle = vehicleService.getVehicleById(1);
+        System.out.println(vehicle);
         assertEquals("Corolla",vehicle.getModel().getModelName());
+    }
+
+    @Test
+    void updateVehicule(){
+        VehicleEntity vehicle = vehicleService.getVehicleById(1);
+        vehicleService.getEntityManager().getTransaction().begin();
+        vehicle.setNumberOfDoors(4);
+        vehicle.setTransmissionType(TransmissionType.AUTOMATIC);
+        vehicle.setVehiclePowerSource(PowerSource.DIESEL);
+        vehicleService.getEntityManager().getTransaction().commit();
+
     }
 
 

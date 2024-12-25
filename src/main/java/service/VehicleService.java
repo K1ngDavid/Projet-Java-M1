@@ -7,13 +7,8 @@ import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 
-public class VehicleService {
+public class VehicleService extends Service{
 
-    private EntityManager entityManager;
-
-    public VehicleService(EntityManager entityManager){
-        this.entityManager = entityManager;
-    }
 
 
     public List<VehicleEntity> getAllVehicles(){

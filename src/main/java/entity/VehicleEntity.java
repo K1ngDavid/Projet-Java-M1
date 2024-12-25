@@ -1,75 +1,80 @@
 package entity;
 
+import enumerations.PowerSource;
+import enumerations.TransmissionType;
+import enumerations.VehicleCategory;
 import enumerations.VehicleType;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
-@Table(name = "Vehicle", schema = "LeTresBonCoin", catalog = "")
+@Table(name = "Vehicle", schema = "LeTresBonCoin")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Vous pouvez aussi utiliser cette stratégie
+@DiscriminatorColumn(name = "vehicleType", discriminatorType = DiscriminatorType.STRING) // Colonne pour différencier les types de véhicules
 public class VehicleEntity {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idVehicle")
     private int idVehicle;
-    @Basic
-    @Column(name = "status")
-    private String status;
-    @Basic
-    @Column(name = "price")
-    private BigDecimal price;
-    @Basic
-    @Column(name = "countryOfOrigin")
-    private String countryOfOrigin;
-    @Basic
-    @Column(name = "vehicule_model_id",insertable = false, updatable = false)
-    private Integer idModel;
-    @Basic
-    @Column(name = "idType")
-    private Integer idType;
-
 
     @ManyToOne
     @JoinColumn(name = "ClientEntity_idClient", referencedColumnName = "idClient")
     private ClientEntity client; // Cette relation pointe vers ClientEntity
 
-    @Basic
-    @Column(name = "horse_power")
-    private Integer horsePower;
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "price")
+    private BigDecimal price;
+
+    @Column(name = "countryOfOrigin")
+    private String countryOfOrigin;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "vehicle_power_source")
-    private VehicleType vehiclePowerSource;
+    private PowerSource vehiclePowerSource;
+
+    @Column(name = "transmissionType")
+    @Enumerated(EnumType.STRING)
+    private TransmissionType transmissionType;
+
+    public TransmissionType getTransmissionType() {
+        return transmissionType;
+    }
+
+    public void setTransmissionType(TransmissionType transmissionType) {
+        this.transmissionType = transmissionType;
+    }
+
+    @Column(name = "numberOfDoors")
+    private Integer numberOfDoors;
+
+    public Integer getNumberOfDoors() {
+        return numberOfDoors;
+    }
+
+    public void setNumberOfDoors(int numberOfDoors) {
+        this.numberOfDoors = numberOfDoors;
+    }
+
+    @Column(name = "horse_power")
+    private Integer horsePower;
+
+    // Ajout de la colonne vehicleType
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vehicleType",insertable=false, updatable=false)
+    private VehicleType vehicleType;  // Ajout de l'enum VehicleType
 
     @OneToOne
     @JoinColumn(name = "vehicule_model_id", referencedColumnName = "idModel", foreignKey = @ForeignKey(name = "FK_Vehicle_Model"))
     private ModelEntity model;
 
-//     Getter pour modelName (ajouté pour obtenir le nom du modèle via la relation)
-    public ModelEntity getModel() {
-        if (model != null) {
-            return model; // Accès à modelName depuis ModelEntity
-        }
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        return "VehicleEntity{\n" +
-                "idVehicle=" + idVehicle +
-                ", nom de la voitur=" + model.getModelName() +
-                ", status='" + status + '\'' +
-                ", price=" + price +
-                ", countryOfOrigin='" + countryOfOrigin + '\'' +
-                ", idModel=" + idModel +
-                ", idType=" + idType +
-                ", client=" + client +
-                ", horsePower=" + horsePower +
-                ", vehiclePowerSource=" + vehiclePowerSource +
-                ", model=" + model.getBrandName() +
-                "\n}";
-    }
-
+    // Getters and setters
     public int getIdVehicle() {
         return idVehicle;
     }
@@ -102,48 +107,43 @@ public class VehicleEntity {
         this.countryOfOrigin = countryOfOrigin;
     }
 
-    public Integer getIdModel() {
-        return idModel;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setIdModel(Integer idModel) {
-        this.idModel = idModel;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-    public Integer getIdType() {
-        return idType;
+    public PowerSource getVehiclePowerSource() {
+        return vehiclePowerSource;
     }
 
-    public void setIdType(Integer idType) {
-        this.idType = idType;
+    public void setVehiclePowerSource(PowerSource vehiclePowerSource) {
+        this.vehiclePowerSource = vehiclePowerSource;
     }
 
     public Integer getHorsePower() {
         return horsePower;
     }
 
+    public VehicleType getVehicleType() {
+        return vehicleType;
+    }
+
     public void setHorsePower(Integer horsePower) {
         this.horsePower = horsePower;
     }
 
-    public Object getVehiclePowerSource() {
-        return vehiclePowerSource;
+    public ModelEntity getModel() {
+        return model;
     }
 
-    public void setVehiclePowerSource(VehicleType vehiclePowerSource) {
-        this.vehiclePowerSource = vehiclePowerSource;
+    public ClientEntity getClient() {
+        return client;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        VehicleEntity that = (VehicleEntity) o;
-        return idVehicle == that.idVehicle && Objects.equals(status, that.status) && Objects.equals(price, that.price) && Objects.equals(countryOfOrigin, that.countryOfOrigin) && Objects.equals(idModel, that.idModel) && Objects.equals(idType, that.idType) && Objects.equals(horsePower, that.horsePower) && Objects.equals(vehiclePowerSource, that.vehiclePowerSource);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idVehicle, status, price, countryOfOrigin, idModel, idType, horsePower, vehiclePowerSource);
+    public void setClient(ClientEntity client) {
+        this.client = client;
     }
 }

@@ -42,6 +42,9 @@ public class RegisterForm extends JFrame{
                     // Expression régulière pour valider le nom d'utilisateur et le mot de passe
                     String regex = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-\\[\\]{}|;:'\",.<>?/])[a-zA-Z0-9!@#$%^&*()_+=\\-\\[\\]{}|;:'\",.<>?/]{6,}$";
 
+                    // Expression régulière pour valider l'email
+                    String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
                     // Création de l'objet Pattern à partir de l'expression régulière
                     Pattern pattern = Pattern.compile(regex);
 
@@ -50,6 +53,12 @@ public class RegisterForm extends JFrame{
                     // Création de Matcher pour tester le mot de passe
                     Matcher passwordMatcher = pattern.matcher(password);
 
+                    // Création de l'objet Pattern pour l'email
+                    Pattern emailPattern = Pattern.compile(emailRegex);
+
+                    // Création de Matcher pour tester l'email
+                    Matcher emailMatcher = emailPattern.matcher(email);
+
                     // Validation du nom d'utilisateur
                     if (!usernameMatcher.matches()) {
                         JOptionPane.showMessageDialog(null, "Le nom d'utilisateur doit contenir au moins 6 caractères, un chiffre et un caractère spécial.");
@@ -57,7 +66,9 @@ public class RegisterForm extends JFrame{
                     // Validation du mot de passe
                     else if (!passwordMatcher.matches()) {
                         JOptionPane.showMessageDialog(null, "Le mot de passe doit contenir au moins 6 caractères, un chiffre et un caractère spécial.");
-                    } else {
+                    } else if (!emailMatcher.matches()) {
+                        JOptionPane.showMessageDialog(null, "L'adresse email n'est pas valide. Veuillez réessayer.");
+                    } else{
                         ClientEntity client = new ClientEntity();
                         client.setName(username);
                         client.setPassword(password);

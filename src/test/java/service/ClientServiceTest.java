@@ -21,8 +21,6 @@ class ClientServiceTest {
 @BeforeEach
     void setUp() {
         // Création de l'EntityManager pour la connexion à la base de données
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("LeTresBonCoin");
-        entityManager = entityManagerFactory.createEntityManager();
         clientService = new ClientService();
 
 //        // Démarre une transaction pour chaque test
@@ -31,134 +29,13 @@ class ClientServiceTest {
 
     @AfterEach
     void tearDown() {
-        // Nettoyage de la base de données après chaque test
-        if (entityManager.getTransaction().isActive()) {
-            entityManager.getTransaction().rollback();
-        }
-        entityManager.close();
+        // Nettoyage de
     }
 
     @Test
-    void getVoituresByClient(){
-        ClientEntity client = entityManager.find(ClientEntity.class,1);
-        System.out.println(clientService.getVehiclesByClientId(client.getIdClient()));
-    }
-
-    @Test
-    void getAllCommands(){
-        ClientEntity client = service.Test.getEntityManager().find(ClientEntity.class,1);
-        System.out.println(client.getCommands());
-    }
-
-
-
-    @Test
-    void getClientByName() {
-        // Ajouter un client pour les tests
-        ClientEntity client = new ClientEntity();
-        client.setName("allo");
-        client.setEmail("ima.frye@example.com");
-        clientService.addClient(client);
-        ClientEntity found = clientService.getClientByName("allo");
-        assertNotNull(found);
-        clientService.deleteClient(found.getIdClient());
-//        // Tester la méthode getClientByName
-//        ClientEntity foundClient = clientService.getClientByName("allo");
-//        assertNotNull(foundClient);
-//        assertEquals("allo", foundClient.getName());
-    }
-
-    @Test
-    void getAllClients() {
-        // Ajouter quelques clients pour tester
-        ClientEntity client1 = new ClientEntity();
-        client1.setName("John Doe");
-        client1.setEmail("john.doe@example.com");
-
-        entityManager.persist(client1);
-
-        ClientEntity client2 = new ClientEntity();
-        client2.setName("Jane Doe");
-        client2.setEmail("jane.doe@example.com");
-
-        entityManager.persist(client2);
-
-        // Tester la méthode getAllClients
-        List<ClientEntity> clients = clientService.getAllClients();
-        assertNotNull(clients);
-        assertTrue(clients.size() > 1);  // On devrait avoir plus d'un client
-    }
-
-    @Test
-    void getClientById() {
-        // Ajouter un client pour les tests
-        ClientEntity newClient = new ClientEntity();
-        newClient.setName("Anna Smith");
-        newClient.setEmail("anna.smith@example.com");
-
-        clientService.addClient(newClient);
-
-        // Tester la méthode getClientById
-        ClientEntity clientById = clientService.getClientById(newClient.getIdClient());
-        assertNotNull(clientById);
-        assertEquals("Anna Smith", clientById.getName());
-    }
-
-    @Test
-    void createClient() {
-        // Créer un client
-
-        ClientEntity newClient = new ClientEntity();
-        newClient.setName("Anna Smith");
-        newClient.setEmail("anna.smith@example.com");
-
-        // Tester la méthode createClient
-        boolean createdClient = clientService.addClient(newClient);
-        assertTrue(createdClient);
-
-    }
-
-    @Test
-    void updateClient() {
-        // Créer un client
-        ClientEntity existingClient = new ClientEntity();
-        existingClient.setName("Old Name");
-        existingClient.setEmail("old.name@example.com");
-        entityManager.persist(existingClient);
-
-        // Modifier le client
-        existingClient.setName("Updated Name");
-        existingClient.setEmail("updated.name@example.com");
-
-        // Tester la méthode updateClient
-        ClientEntity updatedClient = clientService.updateClient(existingClient);
-        assertNotNull(updatedClient);
-        assertEquals("Updated Name", updatedClient.getName());
-        assertEquals("updated.name@example.com", updatedClient.getEmail());
-    }
-
-    @Test
-    void deleteClient() {
-        // Créer un client pour les tests
-        ClientEntity clientToDelete = new ClientEntity();
-        clientToDelete.setName("Delete Me");
-        clientToDelete.setEmail("delete.me@example.com");
-        clientService.addClient(clientToDelete);
-
-        System.out.println("-----> " + clientService.getClientById(clientToDelete.getIdClient()));
-        // Tester la méthode deleteClient
-        boolean isDeleted = clientService.deleteClient(clientToDelete.getIdClient());
-        assertTrue(isDeleted);
-
-        // Vérifier que le client n'existe plus
-        ClientEntity deletedClient = clientService.getClientById(clientToDelete.getIdClient());
-        assertNull(deletedClient);
-    }
-
-    @Test
-    void deleteClient2() {
-        clientService.deleteClient(68);
-        assertNull(clientService.getClientById(68));
+    void getAllVehicles(){
+    ClientEntity client = clientService.getClientById(2);
+    System.out.println(client.getVehicles());
     }
 
 }

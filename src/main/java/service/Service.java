@@ -12,6 +12,9 @@ public class Service {
     public Service(){
         entityManagerFactory = Persistence.createEntityManagerFactory("LeTresBonCoin");
         entityManager = entityManagerFactory.createEntityManager();
+    }
 
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 }
