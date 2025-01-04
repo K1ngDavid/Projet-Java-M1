@@ -3,7 +3,7 @@ package entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "CommandLine", schema = "LeTresBonCoin", catalog = "")
+@Table(name = "CommandLine", schema = "LeTresBonCoin")
 public class CommandLineEntity {
 
     @EmbeddedId
@@ -17,7 +17,7 @@ public class CommandLineEntity {
     @JoinColumn(name = "idVehicle", referencedColumnName = "idVehicle", insertable = false, updatable = false)
     private VehicleEntity vehicle;
 
-    // Getters and setters
+    // Getter et setter
     public CommandLineEntityPK getId() {
         return id;
     }

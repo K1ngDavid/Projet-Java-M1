@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "Command", schema = "LeTresBonCoin", catalog = "")
+@Table(name = "Command", schema = "LeTresBonCoin")
 public class CommandEntity {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "idCommand")
@@ -29,8 +30,14 @@ public class CommandEntity {
     @Column(name = "commandDate")
     private Date commandDate;
 
-    // Removed redundant idClient field
+    // Getter pour récupérer tous les véhicules de la commande
+    public List<VehicleEntity> getVehicles() {
+        return commandLines.stream()
+                .map(CommandLineEntity::getVehicle)
+                .collect(Collectors.toList());
+    }
 
+    // Getters et setters
     public int getIdCommand() {
         return idCommand;
     }
@@ -69,21 +76,5 @@ public class CommandEntity {
 
     public void setClient(ClientEntity client) {
         this.client = client;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CommandEntity that = (CommandEntity) o;
-        return idCommand == that.idCommand &&
-                Objects.equals(commandStatus, that.commandStatus) &&
-                Objects.equals(commandDate, that.commandDate) &&
-                Objects.equals(client, that.client);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idCommand, commandStatus, commandDate, client);
     }
 }

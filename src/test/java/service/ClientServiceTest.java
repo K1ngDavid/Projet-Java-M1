@@ -2,12 +2,14 @@ package service;
 
 import entity.ClientEntity;
 import entity.CommandEntity;
+import entity.VehicleEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,10 +34,7 @@ class ClientServiceTest {
         // Nettoyage de
     }
 
-    @Test
-    void getAllVehicles(){
-    ClientEntity client = clientService.getClientById(2);
-    System.out.println(client.getVehicles());
-    }
+
+
 
 }

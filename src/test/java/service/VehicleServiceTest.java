@@ -1,5 +1,6 @@
 package service;
 
+import entity.MotorcycleEntity;
 import entity.VehicleEntity;
 import enumerations.PowerSource;
 import enumerations.TransmissionType;
@@ -44,6 +45,16 @@ public class VehicleServiceTest {
         vehicle.setVehiclePowerSource(PowerSource.DIESEL);
         vehicleService.getEntityManager().getTransaction().commit();
 
+    }
+
+    @Test
+    void createMotorCycle(){
+        MotorcycleEntity motorcycleEntity = new MotorcycleEntity();
+        motorcycleEntity.setCountryOfOrigin("Germany");
+
+        vehicleService.getEntityManager().getTransaction().begin();
+        vehicleService.getEntityManager().persist(motorcycleEntity);
+        vehicleService.getEntityManager().getTransaction().commit();
     }
 
 

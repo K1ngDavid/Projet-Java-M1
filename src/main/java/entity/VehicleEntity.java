@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Table(name = "Vehicle", schema = "LeTresBonCoin")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Vous pouvez aussi utiliser cette stratégie
 @DiscriminatorColumn(name = "vehicleType", discriminatorType = DiscriminatorType.STRING) // Colonne pour différencier les types de véhicules
-public class VehicleEntity {
+public abstract class VehicleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

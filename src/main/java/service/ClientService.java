@@ -7,7 +7,11 @@ import entity.CommandEntity;
 import entity.VehicleEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+
+
 import java.util.List;
+
+
 
 public class ClientService extends Service{
 
@@ -32,23 +36,23 @@ public class ClientService extends Service{
         }
     }
 
-    public List<VehicleEntity> getVehiclesByClientId(int clientId) {
-        try {
-            // Rechercher le client
-            ClientEntity client = entityManager.find(ClientEntity.class, clientId);
-
-            // Vérifier si le client existe
-            if (client != null) {
-                // Retourner les véhicules associés
-                return client.getVehicles();
-            } else {
-                return null; // Aucun client trouvé
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    public List<VehicleEntity> getVehiclesByClientId(int clientId) {
+//        try {
+//            // Rechercher le client
+//            ClientEntity client = entityManager.find(ClientEntity.class, clientId);
+//
+//            // Vérifier si le client existe
+//            if (client != null) {
+//                // Retourner les véhicules associés
+//                return client.getVehicles();
+//            } else {
+//                return null; // Aucun client trouvé
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
     public List<CommandEntity> getCommandsByClientId(int clientId){
         try{
@@ -229,6 +233,7 @@ public class ClientService extends Service{
             return 0;
         }
     }
+
 
     public boolean clientCanLogIn(String username,String pswd){
         String hql = "SELECT c FROM ClientEntity c WHERE c.name = :username AND c.password = :pswd";

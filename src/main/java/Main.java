@@ -1,5 +1,6 @@
 import entity.ClientEntity;
 import entity.VehicleEntity;
+import frames.HomeForm;
 import frames.LoginForm;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -41,8 +42,8 @@ public class Main {
 //        // Ferme l'EntityManager
 //        entityManager.close();
 
-        LoginForm loginForm = new LoginForm();
-
+//        LoginForm loginForm = new LoginForm();
+        HomeForm homeForm = new HomeForm();
 
     }
 }

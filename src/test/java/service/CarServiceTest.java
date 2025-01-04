@@ -28,7 +28,7 @@ class CarServiceTest {
     void getAllCars() {
         ClientEntity client = service.Test.getEntityManager().find(ClientEntity.class, 1);
         List<VehicleEntity> vehicles = client.getVehicles();
-        vehicles.forEach(vehicle -> System.out.println(vehicle.getIdVehicle()));
+        vehicles.forEach(System.out::println);
     }
 
 
