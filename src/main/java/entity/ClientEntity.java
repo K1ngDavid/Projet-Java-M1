@@ -26,6 +26,10 @@ public class ClientEntity {
     @Basic
     private String password;
 
+    public String getPassword() {
+        return password;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -43,7 +47,7 @@ public class ClientEntity {
     private String phoneNumber;
 
     @Basic
-    @Column(name = "email")
+    @Column(name = "email",unique = true)
     private String email;
 
     @Basic

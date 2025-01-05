@@ -235,10 +235,10 @@ public class ClientService extends Service{
     }
 
 
-    public boolean clientCanLogIn(String username,String pswd){
-        String hql = "SELECT c FROM ClientEntity c WHERE c.name = :username AND c.password = :pswd";
+    public boolean clientCanLogIn(String email,String pswd){
+        String hql = "SELECT c FROM ClientEntity c WHERE c.email = :email AND c.password = :pswd";
         TypedQuery<ClientEntity> query = entityManager.createQuery(hql,ClientEntity.class);
-        query.setParameter("username",username);
+        query.setParameter("email",email);
         query.setParameter("pswd",pswd);
         return query.getResultList().size() > 0;
     }

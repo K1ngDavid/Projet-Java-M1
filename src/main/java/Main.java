@@ -1,5 +1,6 @@
 import entity.ClientEntity;
 import entity.VehicleEntity;
+import frames.AccountForm;
 import frames.HomeForm;
 import frames.LoginForm;
 import jakarta.persistence.EntityManager;
@@ -43,7 +44,11 @@ public class Main {
 //        entityManager.close();
 
 //        LoginForm loginForm = new LoginForm();
-        HomeForm homeForm = new HomeForm();
-
+//
+        clientService = new ClientService();
+        ClientEntity client = clientService.getClientById(2);
+        HomeForm homeForm = new HomeForm(client);
+//
+//        AccountForm accountForm = new AccountForm();
     }
 }
