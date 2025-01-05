@@ -27,17 +27,20 @@ public class HomeForm extends AbstractFrame {
 
         // Panel pour "Mes catégories"
         JPanel panelCategories = new JPanel();
+        panelCategories.setBorder(BorderFactory.createLineBorder(Color.black));
         JLabel jLabel2 = new JLabel("Mes catégories");
         panelCategories.add(jLabel2);
 
         // Panel pour "Mes commandes"
         JPanel panelCommandes = new JPanel();
+        panelCommandes.setBorder(BorderFactory.createLineBorder(Color.black));
         JLabel jLabel3 = new JLabel("Mes commandes");
         jLabel3.setBorder(BorderFactory.createLineBorder(Color.black));
         panelCommandes.add(jLabel3);
 
         // Panel pour "Mes voitures"
         JPanel panelVoitures = new JPanel();
+        panelVoitures.setBorder(BorderFactory.createLineBorder(Color.black));
         panelVoitures.setLayout(new BoxLayout(panelVoitures, BoxLayout.Y_AXIS));
         JLabel jLabel6 = new JLabel("Mes voitures");
         jLabel6.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -48,6 +51,7 @@ public class HomeForm extends AbstractFrame {
 
         // Panel pour "Mes dépenses"
         JPanel panelDepenses = new JPanel();
+        panelDepenses.setBorder(BorderFactory.createLineBorder(Color.black));
         JLabel jLabel7 = new JLabel("Mes dépenses");
         panelDepenses.add(jLabel7);
 

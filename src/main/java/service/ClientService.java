@@ -242,5 +242,4 @@ public class ClientService extends Service{
         query.setParameter("pswd",pswd);
         return query.getResultList().size() > 0;
     }
-
 }

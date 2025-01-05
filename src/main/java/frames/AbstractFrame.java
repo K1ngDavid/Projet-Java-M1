@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public abstract class AbstractFrame extends JFrame {
 
@@ -25,7 +26,8 @@ public abstract class AbstractFrame extends JFrame {
     protected JLabel jLabel7;
     protected JPanel jPanel1;
     protected JButton men;
-    protected JButton settings;
+    protected JButton catalogue;
+    protected JButton myCart;
 
     protected JButton account;
     protected SideMenuPanel sp;
@@ -59,7 +61,8 @@ public abstract class AbstractFrame extends JFrame {
         jPanel1 = new JPanel();
         sidebar = new JPanel();
         pnlRoot = new JPanel();
-        settings = new JButton();
+        catalogue = new JButton();
+        myCart = new JButton();
         home = new JButton();
         account = new JButton();
         men = new JButton();
@@ -79,20 +82,46 @@ public abstract class AbstractFrame extends JFrame {
         sidebar.setBackground(new java.awt.Color(16, 84, 129));
         sidebar.setPreferredSize(new java.awt.Dimension(60, 32));
 
-        settings.setFont(new java.awt.Font("Microsoft PhagsPa", 0, 14)); // NOI18N
-        settings.setForeground(new java.awt.Color(195, 217, 233));
-        settings.setIcon(new javax.swing.ImageIcon()); // NOI18N
-        settings.setText("Settings");
-        settings.setBorderPainted(false);
-        settings.setContentAreaFilled(false);
-        settings.setFocusPainted(false);
-        settings.setHideActionText(true);
-        settings.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
-        settings.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        settings.setIconTextGap(20);
-        settings.setMargin(new java.awt.Insets(2, 0, 2, 14));
-        settings.setMinimumSize(new java.awt.Dimension(0, 35));
-        settings.setPreferredSize(new java.awt.Dimension(50, 574));
+        catalogue.setFont(new java.awt.Font("Microsoft PhagsPa", 0, 14)); // NOI18N
+        catalogue.setForeground(new java.awt.Color(195, 217, 233));
+        catalogue.setIcon(new javax.swing.ImageIcon()); // NOI18N
+        catalogue.setText("Catalogue");
+        catalogue.setBorderPainted(false);
+        catalogue.setContentAreaFilled(false);
+        catalogue.setFocusPainted(false);
+        catalogue.setHideActionText(true);
+        catalogue.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        catalogue.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        catalogue.setIconTextGap(20);
+        catalogue.setMargin(new java.awt.Insets(2, 0, 2, 14));
+        catalogue.setMinimumSize(new java.awt.Dimension(0, 35));
+        catalogue.setPreferredSize(new java.awt.Dimension(50, 574));
+
+        catalogue.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    catalogActionPerformed(e);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        myCart.setFont(new java.awt.Font("Microsoft PhagsPa", 0, 14)); // NOI18N
+        myCart.setForeground(new java.awt.Color(195, 217, 233));
+        myCart.setIcon(new javax.swing.ImageIcon()); // NOI18N
+        myCart.setText("My Cart");
+        myCart.setBorderPainted(false);
+        myCart.setContentAreaFilled(false);
+        myCart.setFocusPainted(false);
+        myCart.setHideActionText(true);
+        myCart.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        myCart.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        myCart.setIconTextGap(20);
+        myCart.setMargin(new java.awt.Insets(2, 0, 2, 14));
+        myCart.setMinimumSize(new java.awt.Dimension(0, 35));
+        myCart.setPreferredSize(new java.awt.Dimension(50, 574));
 
         account.setFont(new java.awt.Font("Microsoft PhagsPa", 0, 14)); // NOI18N
         account.setForeground(new java.awt.Color(195, 217, 233));
@@ -168,7 +197,8 @@ public abstract class AbstractFrame extends JFrame {
                         .addGroup(sidebarLayout.createSequentialGroup()
                                 .addGroup(sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(men, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(settings, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(catalogue, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(myCart,GroupLayout.PREFERRED_SIZE,55,GroupLayout.PREFERRED_SIZE)
                                         .addComponent(account, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE))
                         .addGroup(sidebarLayout.createSequentialGroup()
@@ -185,7 +215,9 @@ public abstract class AbstractFrame extends JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(home, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(settings, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(catalogue, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED) // Espace flexible
+                                .addComponent(myCart, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) // Espace flexible
                                 .addComponent(account, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE) // Bouton en bas
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -234,6 +266,13 @@ public abstract class AbstractFrame extends JFrame {
     abstract void accountActionPerformed(ActionEvent evt);
 
     abstract void homeActionPerformed(ActionEvent evt);
+
+    private void catalogActionPerformed(ActionEvent evt) throws IOException {
+        dispose();
+        CatalogForm catalogForm = new CatalogForm(client);
+        catalogForm.setVisible(true);
+    }
+
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         sp.openMenu();
     }//GEN-LAST:event_jButton2ActionPerformed
