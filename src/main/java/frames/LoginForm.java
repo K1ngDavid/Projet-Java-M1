@@ -1,6 +1,6 @@
 package frames;
 
-import frames.HomeForm;
+import entity.ClientEntity;
 import jakarta.persistence.EntityManager;
 import service.ClientService;
 
@@ -14,8 +14,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class LoginForm extends AbstractFrame {
-    private JTextField textField1;
-    private JTextField textField2;
+    private JTextField emailEntry;
+    private JTextField pswdEntry;
     private JButton connexionButton;
     private JPanel pnlRoot;
     private JLabel lblError;
@@ -93,11 +93,14 @@ public class LoginForm extends AbstractFrame {
 
     void loginVerification() {
         try {
-            if (textField1.getText().matches("^[a-zA-Z0-9._\\-+*]{3,}$") &&
-                    textField2.getText().matches("^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*+\\-]).{8,}$")) {
-                if (clientService.clientCanLogIn(textField1.getText(), textField2.getText())) {
+            String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+            String passwordRegex = "^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*+\\-]).{8,}$";
+
+            if (emailEntry.getText().matches(emailRegex) && pswdEntry.getText().matches(passwordRegex)) {
+                if (clientService.clientCanLogIn(emailEntry.getText(), pswdEntry.getText())) {
                     System.out.println("Client found");
-                    HomeForm homeForm = new HomeForm();
+                    ClientEntity client = clientService.getClientByEmail(emailEntry.getText());
+                    HomeForm homeForm = new HomeForm(client);
                     dispose();
                 } else {
                     throw new LoginException("User not found");
@@ -110,5 +113,28 @@ public class LoginForm extends AbstractFrame {
             lblError.setForeground(Color.red);
             this.revalidate();
         }
+    }
+
+
+
+
+
+
+
+
+
+
+    private void initComponents(){
+
+    }
+
+    @Override
+    void accountActionPerformed(ActionEvent evt) {
+
+    }
+
+    @Override
+    void homeActionPerformed(ActionEvent evt) {
+
     }
 }
