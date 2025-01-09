@@ -7,6 +7,7 @@ public enum VehicleCategory {
     SUV,
     HATCHBACK,
     COUPE,
+    CLASSIC,
     CABRIOLET,
     CROSSOVER,
     MINIVAN,

@@ -1,6 +1,7 @@
 package entity;
 
 import jakarta.persistence.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 import java.util.ArrayList;
@@ -10,6 +11,9 @@ import java.util.List;
 @Table(name = "Client", schema = "LeTresBonCoin")
 public class ClientEntity {
 
+    public ClientEntity(){
+        panier = new ArrayList<>();
+    }
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "idClient")
@@ -22,6 +26,9 @@ public class ClientEntity {
     @Basic
     @Column(name = "name")
     private String name;
+
+    @Transient
+    private List<VehicleEntity> panier;
 
     @Basic
     private String password;
@@ -107,11 +114,42 @@ public class ClientEntity {
         return postalAddress;
     }
 
+    @Override
+    public String toString() {
+        return "ClientEntity{" +
+                "idClient=" + idClient +
+                ", commands=" + commands +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", postalAddress='" + postalAddress + '\'' +
+                ", creditCardNumber='" + creditCardNumber + '\'' +
+                ", cveNumber='" + cveNumber + '\'' +
+                '}';
+    }
+
     public void setPostalAddress(String postalAddress) {
         this.postalAddress = postalAddress;
     }
 
     public void setCreditCardNumber(String creditCardNumber) {
         this.creditCardNumber = creditCardNumber;
+    }
+
+    public List<VehicleEntity> getPanier() {
+        return panier;
+    }
+
+    public void setPanier(List<VehicleEntity> panier) {
+        this.panier = panier;
+    }
+
+    public void addToPanier(VehicleEntity vehicle) {
+        this.panier.add(vehicle);
+    }
+
+    public void removeFromPanier(VehicleEntity vehicle) {
+        this.panier.remove(vehicle);
     }
 }

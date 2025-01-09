@@ -5,6 +5,7 @@ import entity.VehicleEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
+import javax.lang.model.element.TypeElement;
 import java.util.List;
 
 public class VehicleService extends Service{
@@ -17,6 +18,11 @@ public class VehicleService extends Service{
         return query.getResultList();
     }
 
+    public List<VehicleEntity> getUniqueVehicles(){
+        String hql = "SELECT  v from VehicleEntity v GROUP BY v.model.idModel";
+        TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
+        return query.getResultList();
+    }
     public VehicleEntity getVehicleById(int vehicleId) {
         // Requête HQL pour récupérer un véhicule en fonction de son ID
         String hql = "FROM VehicleEntity v WHERE v.idVehicle = :vehicleId";  // Filtrage par ID du véhicule

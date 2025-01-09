@@ -4,18 +4,17 @@ import entity.ClientEntity;
 import entity.VehicleEntity; // Assurez-vous que cette classe existe et représente une voiture.
 
 import javax.swing.*;
+import javax.swing.text.GapContent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
 public class HomeForm extends AbstractFrame {
 
-    private ClientEntity client;
-
     public HomeForm(ClientEntity client) {
-        super();
-        this.client = client;
+        super(client);
         initComponents();
+        this.pack();
     }
 
     private void initComponents() {
@@ -35,7 +34,6 @@ public class HomeForm extends AbstractFrame {
         JPanel panelCommandes = new JPanel();
         panelCommandes.setBorder(BorderFactory.createLineBorder(Color.black));
         JLabel jLabel3 = new JLabel("Mes commandes");
-        jLabel3.setBorder(BorderFactory.createLineBorder(Color.black));
         panelCommandes.add(jLabel3);
 
         // Panel pour "Mes voitures"
@@ -43,7 +41,6 @@ public class HomeForm extends AbstractFrame {
         panelVoitures.setBorder(BorderFactory.createLineBorder(Color.black));
         panelVoitures.setLayout(new BoxLayout(panelVoitures, BoxLayout.Y_AXIS));
         JLabel jLabel6 = new JLabel("Mes voitures");
-        jLabel6.setBorder(BorderFactory.createLineBorder(Color.black));
         panelVoitures.add(jLabel6);
 
         // Ajouter les voitures sous "Mes voitures"
@@ -60,40 +57,36 @@ public class HomeForm extends AbstractFrame {
 
         mainPanelLayout.setHorizontalGroup(
                 mainPanelLayout.createSequentialGroup()
-                        .addContainerGap(20, 100) // Gap gauche (20 pixels minimum)
+                        .addContainerGap(20, 100) // Gap gauche
                         .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel1) // Titre
                                 .addGroup(mainPanelLayout.createSequentialGroup()
                                         .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                                                 .addComponent(panelCategories, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(panelVoitures, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) // Espace flexible
                                         .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                                                 .addComponent(panelDepenses, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(panelCommandes, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 )
                         )
-                        .addContainerGap(20, 150) // Gap droit (20 pixels minimum)
+                        .addContainerGap(20, Short.MAX_VALUE) // Gap droit
         );
 
         mainPanelLayout.setVerticalGroup(
                 mainPanelLayout.createSequentialGroup()
-                        .addGap(23, 23, 23) // Espace initial en haut
+                        .addGap(23) // Espace initial en haut
                         .addComponent(jLabel1) // Titre
-                        .addGap(18, 18, 18) // Espace entre le titre et le premier groupe
-
+                        .addGap(18) // Espace entre le titre et le premier groupe
                         .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(panelCategories) // Panel "Mes catégories"
                                 .addComponent(panelDepenses) // Panel "Mes dépenses"
                         )
-
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED) // Espace fixe
-
+                        .addGap(20) // Espace fixe
                         .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(panelVoitures) // Panel "Mes voitures"
                                 .addComponent(panelCommandes)) // Panel "Mes commandes"
-
-                        .addGap(20, 20, 20) // Espace en bas (fixe)
+                        .addGap(20) // Espace en bas
         );
     }
 
@@ -103,8 +96,7 @@ public class HomeForm extends AbstractFrame {
      * @param panelVoitures Le panneau dans lequel afficher les voitures.
      */
     private void displayVoitures(JPanel panelVoitures) {
-        List<VehicleEntity> voitures = client.getVehicles();
-        System.out.println(voitures);
+        List<VehicleEntity> voitures = this.getClient().getVehicles();
         if (voitures != null && !voitures.isEmpty()) {
             for (VehicleEntity voiture : voitures) {
                 JLabel voitureLabel = new JLabel(voiture.getModel().getBrandName() + " - " + voiture.getModel().getModelName());
@@ -121,12 +113,12 @@ public class HomeForm extends AbstractFrame {
     @Override
     void accountActionPerformed(ActionEvent evt) {
         dispose();
-        AccountForm accountForm = new AccountForm(this.client);
-        System.out.println("VOUS ETES SUR HOME");
+        AccountForm accountForm = new AccountForm(this.getClient());
+        accountForm.setVisible(true);
     }
 
     @Override
     void homeActionPerformed(ActionEvent evt) {
-
+        // Action déjà sur Home
     }
 }

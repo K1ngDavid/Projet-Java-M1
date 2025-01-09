@@ -31,9 +31,25 @@ public abstract class AbstractFrame extends JFrame {
 
     protected JButton account;
     protected SideMenuPanel sp;
+    public AbstractFrame(ClientEntity client){
+        this.client = client;
+        initComponents();
+        this.pack();
+        sp = new SideMenuPanel(this);
+        sp.setMain(pnlRoot);
+        sp.setSide(sidebar);
+        sp.setMinWidth(55);
+        sp.setMaxWidth(150);
+        sp.setMainAnimation(true);
+        sp.setSpeed(4);
+        sp.setResponsiveMinWidth(600);
+
+        this.setVisible(true);
+    }
+
     public AbstractFrame(){
         initComponents();
-
+        this.pack();
         sp = new SideMenuPanel(this);
         sp.setMain(pnlRoot);
         sp.setSide(sidebar);
@@ -47,14 +63,9 @@ public abstract class AbstractFrame extends JFrame {
     }
 
 
-
-
-
-
-
-
-
-
+    public ClientEntity getClient() {
+        return client;
+    }
 
     private void initComponents() {
 
@@ -122,6 +133,17 @@ public abstract class AbstractFrame extends JFrame {
         myCart.setMargin(new java.awt.Insets(2, 0, 2, 14));
         myCart.setMinimumSize(new java.awt.Dimension(0, 35));
         myCart.setPreferredSize(new java.awt.Dimension(50, 574));
+
+        myCart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    myCartActionPerformed(e);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
 
         account.setFont(new java.awt.Font("Microsoft PhagsPa", 0, 14)); // NOI18N
         account.setForeground(new java.awt.Color(195, 217, 233));
@@ -194,17 +216,13 @@ public abstract class AbstractFrame extends JFrame {
         sidebarLayout.setHorizontalGroup(
                 sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(home, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(sidebarLayout.createSequentialGroup()
-                                .addGroup(sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(men, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(catalogue, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(myCart,GroupLayout.PREFERRED_SIZE,55,GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(account, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE))
-                        .addGroup(sidebarLayout.createSequentialGroup()
-                                .addGap(55, 55, 55)
-                                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(men, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(catalogue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(myCart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(account, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidebarLayout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         sidebarLayout.setVerticalGroup(
@@ -216,14 +234,15 @@ public abstract class AbstractFrame extends JFrame {
                                 .addComponent(home, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(catalogue, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED) // Espace flexible
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(myCart, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) // Espace flexible
-                                .addComponent(account, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE) // Bouton en bas
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(account, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18))
         );
+
 
         GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -267,10 +286,17 @@ public abstract class AbstractFrame extends JFrame {
 
     abstract void homeActionPerformed(ActionEvent evt);
 
+    private void myCartActionPerformed(ActionEvent event) throws IOException {
+        dispose();
+        MyCartForm myCartForm = new MyCartForm(client);
+        myCartForm.setVisible(true);
+    }
+
     private void catalogActionPerformed(ActionEvent evt) throws IOException {
         dispose();
         CatalogForm catalogForm = new CatalogForm(client);
         catalogForm.setVisible(true);
+        catalogue.setBorderPainted(true);
     }
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

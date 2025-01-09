@@ -9,30 +9,31 @@ import jakarta.persistence.Persistence;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import repository.ClientRepository;
 
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-class ClientServiceTest {
+class ClientServiceTest extends Service {
 
     private ClientService clientService;
-    private EntityManager entityManager;
 
 @BeforeEach
-    void setUp() {
-        // Création de l'EntityManager pour la connexion à la base de données
-        clientService = new ClientService();
+void setUp() {
+    clientService = new ClientService();
+}
 
-//        // Démarre une transaction pour chaque test
-//        entityManager.getTransaction().begin();
-    }
+@Test
+void test(){
+    System.out.println(clientService.getClientByEmail("david.roufe@gmail.com"));
+}
 
-    @AfterEach
-    void tearDown() {
-        // Nettoyage de
-    }
+@AfterEach
+void tearDown() {
+    // Nettoyage de
+}
 
 
 

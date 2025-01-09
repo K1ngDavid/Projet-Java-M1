@@ -7,10 +7,11 @@ import entity.CommandEntity;
 import entity.VehicleEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import org.springframework.beans.factory.annotation.Autowired;
+import repository.ClientRepository;
 
 
 import java.util.List;
-
 
 
 public class ClientService extends Service{
@@ -26,6 +27,21 @@ public class ClientService extends Service{
             String hql = "FROM ClientEntity c WHERE c.name = :name";
             TypedQuery<ClientEntity> query = entityManager.createQuery(hql, ClientEntity.class);
             query.setParameter("name", name);
+            List<ClientEntity> results = query.getResultList();
+
+            // On suppose qu'un seul client correspond au nom
+            return results.isEmpty() ? null : results.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ClientEntity getClientByEmail(String email) {
+        try {
+            String hql = "FROM ClientEntity c WHERE c.email = :email";
+            TypedQuery<ClientEntity> query = entityManager.createQuery(hql, ClientEntity.class);
+            query.setParameter("email", email);
             List<ClientEntity> results = query.getResultList();
 
             // On suppose qu'un seul client correspond au nom
@@ -199,24 +215,6 @@ public class ClientService extends Service{
         }
     }
 
-    /**
-     * Récupère un client par son email.
-     *
-     * @param email L'email du client recherché.
-     * @return Le client correspondant ou null si aucun client n'est trouvé.
-     */
-    public ClientEntity getClientByEmail(String email) {
-        try {
-            String hql = "FROM ClientEntity c WHERE c.email = :email";
-            TypedQuery<ClientEntity> query = entityManager.createQuery(hql, ClientEntity.class);
-            query.setParameter("email", email);
-            List<ClientEntity> results = query.getResultList();
-            return results.isEmpty() ? null : results.get(0);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     /**
      * Compte le nombre total de clients dans la base de données.
@@ -240,6 +238,13 @@ public class ClientService extends Service{
         TypedQuery<ClientEntity> query = entityManager.createQuery(hql,ClientEntity.class);
         query.setParameter("email",email);
         query.setParameter("pswd",pswd);
+        return query.getResultList().size() > 0;
+    }
+
+    public boolean isEmailAlreadyExists(String email){
+        String hql = "SELECT c FROM ClientEntity c WHERE c.email = :email";
+        TypedQuery<ClientEntity> query = entityManager.createQuery(hql,ClientEntity.class);
+        query.setParameter("email",email);
         return query.getResultList().size() > 0;
     }
 }
