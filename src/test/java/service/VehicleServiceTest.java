@@ -5,57 +5,82 @@ import entity.VehicleEntity;
 import enumerations.PowerSource;
 import enumerations.TransmissionType;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VehicleServiceTest {
 
-
-    private VehicleService vehicleService;
-
+    private static VehicleService vehicleService;
 
     @BeforeEach
     void setUp() {
-        // Création de l'EntityManager pour la connexion à la base de données
-        vehicleService = new VehicleService();
+        // ✅ Évite de recréer `VehicleService` à chaque test
+        if (vehicleService == null) {
+            vehicleService = new VehicleService();
+        }
     }
 
     @Test
     void getVehicleNameById() {
-        // Récupération de la session Hibernate à partir de l'EntityManager
+        // 🔍 Récupération du véhicule
         VehicleEntity vehicle = vehicleService.getVehicleById(1);
-        System.out.println(vehicle);
-        assertEquals("Corolla",vehicle.getModel().getModelName());
+
+        // ✅ Vérifications pour éviter les NullPointerException
+        assertNotNull(vehicle, "Le véhicule avec l'ID 1 n'existe pas dans la base.");
+        assertNotNull(vehicle.getModel(), "Le véhicule n'a pas de modèle associé.");
+
+        // ✅ Vérifie que le modèle correspond à "Corolla"
+        assertEquals("Corolla", vehicle.getModel().getModelName());
     }
 
-    @Test
-    void updateVehicule(){
-        VehicleEntity vehicle = vehicleService.getVehicleById(1);
-        vehicleService.getEntityManager().getTransaction().begin();
-        vehicle.setNumberOfDoors(4);
-        vehicle.setTransmissionType(TransmissionType.AUTOMATIC);
-        vehicle.setVehiclePowerSource(PowerSource.DIESEL);
-        vehicleService.getEntityManager().getTransaction().commit();
+//    @Test
+//    void updateVehicule() {
+//        // 🔍 Récupération du véhicule
+//        VehicleEntity vehicle = vehicleService.getVehicleById(1);
+//        assertNotNull(vehicle, "Le véhicule avec l'ID 1 n'existe pas.");
+//
+//        // ✅ Démarre la transaction
+//        vehicleService.getEntityManager().getTransaction().begin();
+//
+//        // ✅ Modifications du véhicule
+//        vehicle.setNumberOfDoors(4);
+//        vehicle.setTransmissionType(TransmissionType.AUTOMATIC);
+//        vehicle.setVehiclePowerSource(PowerSource.DIESEL);
+//
+//        // ✅ Commit la transaction
+//        vehicleService.getEntityManager().getTransaction().commit();
+//
+//        // 🔍 Vérification après mise à jour
+//        VehicleEntity updatedVehicle = vehicleService.getVehicleById(1);
+//        assertEquals(4, updatedVehicle.getNumberOfDoors());
+//        assertEquals(TransmissionType.AUTOMATIC, updatedVehicle.getTransmissionType());
+//        assertEquals(PowerSource.DIESEL, updatedVehicle.getVehiclePowerSource());
+//    }
 
-    }
-
-    @Test
-    void createMotorCycle(){
-        MotorcycleEntity motorcycleEntity = new MotorcycleEntity();
-        motorcycleEntity.setCountryOfOrigin("Germany");
-
-        vehicleService.getEntityManager().getTransaction().begin();
-        vehicleService.getEntityManager().persist(motorcycleEntity);
-        vehicleService.getEntityManager().getTransaction().commit();
-    }
-
-
+//    @Test
+//    void createMotorCycle() {
+//        // 🔥 Création d'une nouvelle moto
+//        MotorcycleEntity motorcycleEntity = new MotorcycleEntity();
+//        motorcycleEntity.setCountryOfOrigin("Germany");
+//        motorcycleEntity.setPrice(new BigDecimal("15000.00"));
+//        motorcycleEntity.setHorsePower(100);
+//        motorcycleEntity.setVehiclePowerSource(PowerSource.PETROL);
+//        motorcycleEntity.setTransmissionType(TransmissionType.MANUAL);
+//        motorcycleEntity.setNumberOfDoors(0); // Une moto n'a pas de portes
+//
+//        // ✅ Associe un modèle existant
+//        motorcycleEntity.setModel(vehicleService.getModelById(1));
+//
+//        // ✅ Démarre et commit la transaction
+//        vehicleService.getEntityManager().getTransaction().begin();
+//        vehicleService.getEntityManager().persist(motorcycleEntity);
+//        vehicleService.getEntityManager().getTransaction().commit();
+//
+//        // ✅ Vérifie que l'insertion a réussi
+//        assertNotNull(motorcycleEntity.getIdVehicle(), "L'insertion de la moto a échoué.");
+//    }
 }

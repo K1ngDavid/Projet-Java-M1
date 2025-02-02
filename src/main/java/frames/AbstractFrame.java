@@ -42,7 +42,7 @@ public abstract class AbstractFrame extends JFrame {
         sp.setMaxWidth(150);
         sp.setMainAnimation(true);
         sp.setSpeed(4);
-        sp.setResponsiveMinWidth(600);
+        sp.setResponsiveMinWidth(800);
 
         this.setVisible(true);
     }
@@ -213,6 +213,7 @@ public abstract class AbstractFrame extends JFrame {
 
         GroupLayout sidebarLayout = new javax.swing.GroupLayout(sidebar);
         sidebar.setLayout(sidebarLayout);
+
         sidebarLayout.setHorizontalGroup(
                 sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(home, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -220,9 +221,7 @@ public abstract class AbstractFrame extends JFrame {
                         .addComponent(catalogue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(myCart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(account, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidebarLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE) // ✅ Add to horizontal group
         );
 
         sidebarLayout.setVerticalGroup(
@@ -239,7 +238,7 @@ public abstract class AbstractFrame extends JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(account, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE) // ✅ Add to vertical group
                                 .addGap(18, 18, 18))
         );
 
@@ -284,7 +283,11 @@ public abstract class AbstractFrame extends JFrame {
 
     abstract void accountActionPerformed(ActionEvent evt);
 
-    abstract void homeActionPerformed(ActionEvent evt);
+    private void homeActionPerformed(ActionEvent evt){
+        dispose();
+        HomeForm homeForm = new HomeForm(client);
+        homeForm.setVisible(true);
+    }
 
     private void myCartActionPerformed(ActionEvent event) throws IOException {
         dispose();

@@ -1,21 +1,24 @@
 package entity;
 
-import enumerations.PowerSource;
+import enumerations.VehicleType; // ✅ Import correct de l'énumération
 import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
-@Table(name = "VehicleType", schema = "LeTresBonCoin", catalog = "")
+@Table(name = "VehicleType", schema = "LeTresBonCoin")
 public class VehicleTypeEntity {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idType")
     private int idType;
-    @Enumerated(EnumType.STRING) // Utilisation du type énuméré
-    @Column(name = "typeName")
-    private PowerSource typeName;
 
+    @Enumerated(EnumType.STRING) // ✅ Utilisation correcte de l'énumération
+    @Column(name = "typeName", nullable = false, unique = true)
+    private VehicleType typeName;
+
+    // ✅ Getters et Setters
     public int getIdType() {
         return idType;
     }
@@ -24,20 +27,21 @@ public class VehicleTypeEntity {
         this.idType = idType;
     }
 
-    public PowerSource getTypeName() {
+    public VehicleType getTypeName() {
         return typeName;
     }
 
-    public void setTypeName(PowerSource typeName) {
+    public void setTypeName(VehicleType typeName) {
         this.typeName = typeName;
     }
 
+    // ✅ Correction de equals() et hashCode()
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VehicleTypeEntity that = (VehicleTypeEntity) o;
-        return idType == that.idType && Objects.equals(typeName, that.typeName);
+        return idType == that.idType && typeName == that.typeName; // 🔥 Comparaison directe de l'enum
     }
 
     @Override

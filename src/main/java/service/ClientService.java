@@ -1,20 +1,14 @@
 package service;
 
-
-import com.mysql.cj.xdevapi.Client;
 import entity.ClientEntity;
 import entity.CommandEntity;
-import entity.VehicleEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import org.springframework.beans.factory.annotation.Autowired;
-import repository.ClientRepository;
-
+import tools.JPAUtil;
 
 import java.util.List;
 
-
-public class ClientService extends Service{
+public class ClientService extends Service {
 
     /**
      * Récupère un client par son nom.
@@ -27,65 +21,52 @@ public class ClientService extends Service{
             String hql = "FROM ClientEntity c WHERE c.name = :name";
             TypedQuery<ClientEntity> query = entityManager.createQuery(hql, ClientEntity.class);
             query.setParameter("name", name);
-            List<ClientEntity> results = query.getResultList();
-
-            // On suppose qu'un seul client correspond au nom
-            return results.isEmpty() ? null : results.get(0);
+            return query.getResultStream().findFirst().orElse(null);
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public ClientEntity getClientByEmail(String email) {
-        try {
-            String hql = "FROM ClientEntity c WHERE c.email = :email";
-            TypedQuery<ClientEntity> query = entityManager.createQuery(hql, ClientEntity.class);
-            query.setParameter("email", email);
-            List<ClientEntity> results = query.getResultList();
-
-            // On suppose qu'un seul client correspond au nom
-            return results.isEmpty() ? null : results.get(0);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-//    public List<VehicleEntity> getVehiclesByClientId(int clientId) {
-//        try {
-//            // Rechercher le client
-//            ClientEntity client = entityManager.find(ClientEntity.class, clientId);
-//
-//            // Vérifier si le client existe
-//            if (client != null) {
-//                // Retourner les véhicules associés
-//                return client.getVehicles();
-//            } else {
-//                return null; // Aucun client trouvé
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
-    public List<CommandEntity> getCommandsByClientId(int clientId){
-        try{
-            ClientEntity client = entityManager.find(ClientEntity.class,clientId);
-            return client.getCommands();
-        }
-        catch (Exception e){
             e.printStackTrace();
             return null;
         }
     }
 
     /**
-     * Récupère un client par son identifiant.
+     * Récupère un client par son email.
      *
-     * @param id L'identifiant du client recherché.
+     * @param email Email du client recherché.
      * @return Le client correspondant ou null si aucun client n'est trouvé.
+     */
+    public ClientEntity getClientByEmail(String email) {
+        try {
+            String hql = "FROM ClientEntity c WHERE c.email = :email";
+            TypedQuery<ClientEntity> query = entityManager.createQuery(hql, ClientEntity.class);
+            query.setParameter("email", email);
+            return query.getResultStream().findFirst().orElse(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Récupère les commandes d'un client.
+     *
+     * @param clientId ID du client.
+     * @return Liste des commandes associées.
+     */
+    public List<CommandEntity> getCommandsByClientId(int clientId) {
+        try {
+            ClientEntity client = entityManager.find(ClientEntity.class, clientId);
+            return (client != null) ? client.getCommands() : null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Récupère un client par son ID.
+     *
+     * @param id Identifiant du client.
+     * @return L'entité ClientEntity trouvée ou null.
      */
     public ClientEntity getClientById(int id) {
         try {
@@ -103,8 +84,7 @@ public class ClientService extends Service{
      */
     public List<ClientEntity> getAllClients() {
         try {
-            String hql = "FROM ClientEntity";
-            TypedQuery<ClientEntity> query = entityManager.createQuery(hql, ClientEntity.class);
+            TypedQuery<ClientEntity> query = entityManager.createQuery("FROM ClientEntity", ClientEntity.class);
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,14 +95,12 @@ public class ClientService extends Service{
     /**
      * Ajoute un nouveau client à la base de données.
      *
-     * @param client L'objet ClientEntity à ajouter.
+     * @param client L'entité ClientEntity à ajouter.
+     * @return true si l'ajout est réussi, false sinon.
      */
     public boolean addClient(ClientEntity client) {
-
         try {
-            if(!entityManager.getTransaction().isActive()){
-                entityManager.getTransaction().begin();
-            }
+            entityManager.getTransaction().begin();
             entityManager.persist(client);
             entityManager.getTransaction().commit();
             return true;
@@ -133,118 +111,90 @@ public class ClientService extends Service{
             }
             return false;
         }
-
     }
 
     /**
      * Met à jour un client existant.
      *
-     * @param client L'objet ClientEntity à mettre à jour.
-     * @return
+     * @param client L'entité ClientEntity mise à jour.
+     * @return Le client mis à jour.
      */
     public ClientEntity updateClient(ClientEntity client) {
         try {
-            if(!entityManager.getTransaction().isActive()){
-                entityManager.getTransaction().begin();
-            }
-            entityManager.merge(client);
+            entityManager.getTransaction().begin();
+            ClientEntity updatedClient = entityManager.merge(client);
             entityManager.getTransaction().commit();
+            return updatedClient;
         } catch (Exception e) {
             e.printStackTrace();
             if (entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();
             }
+            return null;
         }
-        return client;
     }
 
     /**
-     * Supprime un client par son identifiant.
+     * Supprime un client par son ID.
      *
-     * @param id L'identifiant du client à supprimer.
+     * @param clientId ID du client à supprimer.
+     * @return true si la suppression a réussi, false sinon.
      */
     public boolean deleteClient(int clientId) {
-        if (!entityManager.getTransaction().isActive()) {
+        try {
             entityManager.getTransaction().begin();
-        }
-
-        ClientEntity clientToDelete = entityManager.find(ClientEntity.class, clientId);
-        if (clientToDelete != null) {
-            entityManager.remove(clientToDelete);
-            entityManager.getTransaction().commit();
-            return true;
-        } else {
+            ClientEntity client = entityManager.find(ClientEntity.class, clientId);
+            if (client != null) {
+                entityManager.remove(client);
+                entityManager.getTransaction().commit();
+                return true;
+            }
+            entityManager.getTransaction().rollback();
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
             return false;
         }
     }
 
-
     /**
-     * Récupère les clients dont le nom contient une certaine chaîne de caractères.
+     * Vérifie si un email existe déjà.
      *
-     * @param partialName La chaîne de caractères à rechercher dans les noms des clients.
-     * @return Une liste de clients dont le nom contient la chaîne de caractères.
+     * @param email Email à vérifier.
+     * @return true si l'email existe déjà, false sinon.
      */
-    public List<ClientEntity> getClientsByNameContains(String partialName) {
+    public boolean isEmailAlreadyExists(String email) {
         try {
-            String hql = "FROM ClientEntity c WHERE c.name LIKE :partialName";
-            TypedQuery<ClientEntity> query = entityManager.createQuery(hql, ClientEntity.class);
-            query.setParameter("partialName", "%" + partialName + "%");
-            return query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Récupère les clients par un critère spécifique, par exemple, les clients par pays.
-     *
-     * @param country Le pays des clients recherchés.
-     * @return Une liste de clients du pays spécifié.
-     */
-    public List<ClientEntity> getClientsByCountry(String country) {
-        try {
-            String hql = "FROM ClientEntity c WHERE c.country = :country";
-            TypedQuery<ClientEntity> query = entityManager.createQuery(hql, ClientEntity.class);
-            query.setParameter("country", country);
-            return query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-    /**
-     * Compte le nombre total de clients dans la base de données.
-     *
-     * @return Le nombre total de clients.
-     */
-    public long countClients() {
-        try {
-            String hql = "SELECT COUNT(c) FROM ClientEntity c";
+            String hql = "SELECT COUNT(c) FROM ClientEntity c WHERE c.email = :email";
             TypedQuery<Long> query = entityManager.createQuery(hql, Long.class);
-            return query.getSingleResult();
+            query.setParameter("email", email);
+            return query.getSingleResult() > 0;
         } catch (Exception e) {
             e.printStackTrace();
-            return 0;
+            return false;
         }
     }
 
-
-    public boolean clientCanLogIn(String email,String pswd){
-        String hql = "SELECT c FROM ClientEntity c WHERE c.email = :email AND c.password = :pswd";
-        TypedQuery<ClientEntity> query = entityManager.createQuery(hql,ClientEntity.class);
-        query.setParameter("email",email);
-        query.setParameter("pswd",pswd);
-        return query.getResultList().size() > 0;
-    }
-
-    public boolean isEmailAlreadyExists(String email){
-        String hql = "SELECT c FROM ClientEntity c WHERE c.email = :email";
-        TypedQuery<ClientEntity> query = entityManager.createQuery(hql,ClientEntity.class);
-        query.setParameter("email",email);
-        return query.getResultList().size() > 0;
+    /**
+     * Vérifie si un client peut se connecter.
+     *
+     * @param email Email du client.
+     * @param pswd  Mot de passe du client.
+     * @return true si le client peut se connecter, false sinon.
+     */
+    public boolean clientCanLogIn(String email, String pswd) {
+        try {
+            String hql = "SELECT COUNT(c) FROM ClientEntity c WHERE c.email = :email AND c.password = :pswd";
+            TypedQuery<Long> query = entityManager.createQuery(hql, Long.class);
+            query.setParameter("email", email);
+            query.setParameter("pswd", pswd);
+            return query.getSingleResult() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

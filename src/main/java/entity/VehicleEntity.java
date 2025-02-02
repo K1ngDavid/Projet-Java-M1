@@ -146,4 +146,8 @@ public abstract class VehicleEntity {
     public void setClient(ClientEntity client) {
         this.client = client;
     }
+
+    public void setModel(ModelEntity model) {
+        this.model = model;
+    }
 }

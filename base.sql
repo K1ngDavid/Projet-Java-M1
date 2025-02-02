@@ -8,7 +8,9 @@ create table Client
     postalAddress    varchar(255) null,
     creditCardNumber varchar(255) null,
     cveNumber        varchar(255) null,
-    password         varchar(255) null
+    password         varchar(255) null,
+    constraint email
+        unique (email)
 );
 
 create table Command
@@ -18,13 +20,10 @@ create table Command
     commandStatus varchar(255) null,
     commandDate   date         not null,
     idClient      int          null,
-    constraint Command_ibfk_1
+    constraint FK_Command_Client
         foreign key (idClient) references Client (idClient)
             on delete set null
 );
-
-create index idClient
-    on Command (idClient);
 
 create table Invoice
 (
@@ -33,13 +32,10 @@ create table Invoice
     invoiceDate date           not null,
     totalAmount decimal(38, 2) null,
     idCommand   int            null,
-    constraint Invoice_ibfk_1
+    constraint FK_Invoice_Command
         foreign key (idCommand) references Command (idCommand)
             on delete cascade
 );
-
-create index idCommand
-    on Invoice (idCommand);
 
 create table Model
 (
@@ -58,45 +54,31 @@ create table VehicleType
 
 create table Vehicle
 (
-    idVehicle                  int auto_increment
+    idVehicle             int auto_increment
         primary key,
-    status                     varchar(255)                                                                                                                   null,
-    price                      decimal(38, 2)                                                                                                                 null,
-    countryOfOrigin            varchar(255)                                                                                                                   null,
-    vehicule_model_id          int                                                                                                                            null,
-    idType                     int                                                                                                                            null,
-    horse_power                int                                                                                                                            null,
-    vehicle_power_source       enum ('DIESEL', 'ELECTRIC', 'HYBRID', 'PETROL')                                                                                null,
-    ClientEntity_idClient      int                                                                                                                            not null,
-    vehicleEntitySet_idVehicle int                                                                                                                            not null,
-    DTYPE                      varchar(31)                                                                                                                    not null,
-    numberOfDoors              int                                                                                                                            null,
-    transmissionType           enum ('AUTOMATIC', 'AWD', 'CVT', 'FOUR_WHEEL_DRIVE', 'MANUAL', 'SEMI_AUTOMATIC')                                               null,
-    image_url                  varchar(500)                                                                                                                   null,
-    category                   enum ('SPORTIVE', 'SUPERSUPERSPORTIVE', 'BERLINE', 'SUV', 'HATCHBACK', 'COUPE', 'CABRIOLET', 'CROSSOVER', 'MINIVAN', 'PICKUP') null,
-    constraint UKmmrjew7wu915tdtcnhd2op16i
-        unique (vehicleEntitySet_idVehicle),
-    constraint FKby9xh8956jw17dq5gpqerted0
-        foreign key (vehicleEntitySet_idVehicle) references Vehicle (idVehicle),
-    constraint FKo9mnvbku9969x99is6lj1wxxj
-        foreign key (ClientEntity_idClient) references Client (idClient),
-    constraint Vehicle_ibfk_1
+    status                varchar(255)                                                                                                                              null,
+    price                 decimal(38, 2)                                                                                                                            null,
+    countryOfOrigin       varchar(255)                                                                                                                              null,
+    vehicule_model_id     int                                                                                                                                       null,
+    idType                int                                                                                                                                       null,
+    horse_power           int                                                                                                                                       null,
+    vehicle_power_source  enum ('DIESEL', 'ELECTRIC', 'HYBRID', 'PETROL')                                                                                           null,
+    numberOfDoors         int                                                                                                                                       null,
+    transmissionType      enum ('AUTOMATIC', 'AWD', 'CVT', 'FOUR_WHEEL_DRIVE', 'MANUAL', 'SEMI_AUTOMATIC')                                                          null,
+    image_url             varchar(255)                                                                                                                              null,
+    category              enum ('SPORTIVE', 'SUPERSUPERSPORTIVE', 'BERLINE', 'SUV', 'HATCHBACK', 'COUPE', 'CABRIOLET', 'CROSSOVER', 'MINIVAN', 'PICKUP', 'CLASSIC') null,
+    engine_capacity       int                                                                                                                                       null,
+    vehicleType           varchar(31)                                                                                                                               not null,
+    engineCapacity        int                                                                                                                                       null,
+    ClientEntity_idClient int                                                                                                                                       null,
+    constraint FK_Vehicle_Model
         foreign key (vehicule_model_id) references Model (idModel)
             on delete set null,
-    constraint Vehicle_ibfk_2
+    constraint FK_Vehicle_Type
         foreign key (idType) references VehicleType (idType)
-            on delete set null
-);
-
-create table Car
-(
-    idVehicle        int                                                                              not null
-        primary key,
-    numberOfDoors    int                                                                              null,
-    transmissionType enum ('MANUAL', 'AUTOMATIC', 'SEMI_AUTOMATIC', 'CVT', 'AWD', 'FOUR_WHEEL_DRIVE') null,
-    constraint Car_ibfk_1
-        foreign key (idVehicle) references Vehicle (idVehicle)
-            on delete cascade
+            on delete set null,
+    constraint FKo9mnvbku9969x99is6lj1wxxj
+        foreign key (ClientEntity_idClient) references Client (idClient)
 );
 
 create table CommandLine
@@ -104,30 +86,11 @@ create table CommandLine
     idCommand int not null,
     idVehicle int not null,
     primary key (idCommand, idVehicle),
-    constraint CommandLine_ibfk_1
+    constraint FK_CommandLine_Command
         foreign key (idCommand) references Command (idCommand)
             on delete cascade,
-    constraint CommandLine_ibfk_2
+    constraint FK_CommandLine_Vehicle
         foreign key (idVehicle) references Vehicle (idVehicle)
             on delete cascade
 );
-
-create index idVehicle
-    on CommandLine (idVehicle);
-
-create table Motorcycle
-(
-    idVehicle      int not null
-        primary key,
-    engineCapacity int null,
-    constraint Motorcycle_ibfk_1
-        foreign key (idVehicle) references Vehicle (idVehicle)
-            on delete cascade
-);
-
-create index idModel
-    on Vehicle (vehicule_model_id);
-
-create index idType
-    on Vehicle (idType);
 

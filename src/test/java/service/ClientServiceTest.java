@@ -9,7 +9,6 @@ import jakarta.persistence.Persistence;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import repository.ClientRepository;
 
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,38 +1,123 @@
 package service;
 
-import entity.ClientEntity;
 import entity.VehicleEntity;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-
-import javax.lang.model.element.TypeElement;
 import java.util.List;
 
-public class VehicleService extends Service{
+public class VehicleService extends Service {
 
-
-
-    public List<VehicleEntity> getAllVehicles(){
-        String hql = "FROM VehicleEntity";
-        TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
-        return query.getResultList();
+    /**
+     * Récupère tous les véhicules.
+     *
+     * @return Liste de tous les véhicules.
+     */
+    public List<VehicleEntity> getAllVehicles() {
+        try {
+            String hql = "FROM VehicleEntity";
+            TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public List<VehicleEntity> getUniqueVehicles(){
-        String hql = "SELECT  v from VehicleEntity v GROUP BY v.model.idModel";
-        TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
-        return query.getResultList();
+    /**
+     * Récupère les véhicules uniques basés sur leur modèle.
+     *
+     * @return Liste de véhicules avec un modèle unique.
+     */
+    public List<VehicleEntity> getUniqueVehicles() {
+        try {
+            String hql = "SELECT v FROM VehicleEntity v GROUP BY v.model.idModel";
+            TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
+
+    /**
+     * Récupère un véhicule par son ID.
+     *
+     * @param vehicleId ID du véhicule.
+     * @return L'entité VehicleEntity trouvée ou null.
+     */
     public VehicleEntity getVehicleById(int vehicleId) {
-        // Requête HQL pour récupérer un véhicule en fonction de son ID
-        String hql = "FROM VehicleEntity v WHERE v.idVehicle = :vehicleId";  // Filtrage par ID du véhicule
-
-        // Création de la requête avec le paramètre dynamique
-        TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
-        query.setParameter("vehicleId", vehicleId);  // Passage du paramètre "vehicleId" à la requête
-
-        // Retourner le résultat (un seul véhicule ou null si non trouvé)
-        return query.getResultList().stream().findFirst().orElse(null);  // Utilisation de stream pour obtenir un seul élément ou null
+        try {
+            return entityManager.find(VehicleEntity.class, vehicleId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
+    /**
+     * Ajoute un nouveau véhicule à la base de données.
+     *
+     * @param vehicle L'entité VehicleEntity à ajouter.
+     * @return true si l'ajout est réussi, false sinon.
+     */
+    public boolean addVehicle(VehicleEntity vehicle) {
+        try {
+            entityManager.getTransaction().begin();
+            entityManager.persist(vehicle);
+            entityManager.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Met à jour un véhicule existant.
+     *
+     * @param vehicle L'entité VehicleEntity mise à jour.
+     * @return Le véhicule mis à jour.
+     */
+    public VehicleEntity updateVehicle(VehicleEntity vehicle) {
+        try {
+            entityManager.getTransaction().begin();
+            VehicleEntity updatedVehicle = entityManager.merge(vehicle);
+            entityManager.getTransaction().commit();
+            return updatedVehicle;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Supprime un véhicule par son ID.
+     *
+     * @param vehicleId ID du véhicule à supprimer.
+     * @return true si la suppression a réussi, false sinon.
+     */
+    public boolean deleteVehicle(int vehicleId) {
+        try {
+            entityManager.getTransaction().begin();
+            VehicleEntity vehicle = entityManager.find(VehicleEntity.class, vehicleId);
+            if (vehicle != null) {
+                entityManager.remove(vehicle);
+                entityManager.getTransaction().commit();
+                return true;
+            }
+            entityManager.getTransaction().rollback();
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            return false;
+        }
+    }
 }

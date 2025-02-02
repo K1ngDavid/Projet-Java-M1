@@ -1,24 +1,22 @@
 import entity.ClientEntity;
-import entity.VehicleEntity;
-import frames.AccountForm;
 import frames.HomeForm;
-import frames.LoginForm;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import service.ClientService;
-
-import java.util.List;
+import tools.JPAUtil;
 
 public class Main {
-
-    static ClientService clientService;
-    static EntityManager entityManager;
     public static void main(String[] args) {
+        try {
+            ClientService clientService = new ClientService();
+            ClientEntity client = clientService.getClientById(2);
+            new HomeForm(client);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        clientService = new ClientService();
-        ClientEntity client = clientService.getClientById(2);
-        HomeForm homeForm = new HomeForm(client);
-
+        // ✅ Fermer Hibernate proprement à la fin de l'application (via shutdown hook)
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Fermeture propre de Hibernate...");
+            JPAUtil.close();
+        }));
     }
 }

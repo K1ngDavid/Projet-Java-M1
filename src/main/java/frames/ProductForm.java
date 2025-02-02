@@ -8,7 +8,10 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class ProductForm extends AbstractFrame {
     private JPanel pnlProduct; // Contient image + description
@@ -46,7 +49,7 @@ public class ProductForm extends AbstractFrame {
         // Panel pour l'image
         pnlImage = new JPanel(new BorderLayout());
         pnlImage.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        JLabel imageLabel = new JLabel(new ImageIcon(ImageIO.read(getClass().getResource("/images/" + vehicle.getImageUrl()))));
+        JLabel imageLabel = new JLabel(new ImageIcon(ImageIO.read(getClass().getResource("/images/car.png"))));
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER); // Centrer l'image
         pnlImage.add(imageLabel, BorderLayout.CENTER);
 
@@ -86,13 +89,26 @@ public class ProductForm extends AbstractFrame {
         });
     }
 
+//    private JLabel createImageLabel(String imageUrl) {
+//        try {
+//            // Configurer la connexion HTTP
+//            URL url = new URL(imageUrl);
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+//            connection.connect();
+//
+//            // Lire l'image
+//            BufferedImage image = ImageIO.read(connection.getInputStream());
+//            return new JLabel(new ImageIcon(image));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return new JLabel("Image not available");
+//        }
+//    }
+
+
     @Override
     void accountActionPerformed(ActionEvent evt) {
         // Gérer l'action du compte
-    }
-
-    @Override
-    void homeActionPerformed(ActionEvent evt) {
-        // Gérer l'action de retour à la maison
     }
 }

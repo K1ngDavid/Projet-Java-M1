@@ -1,18 +1,12 @@
 package service;
-
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-
+import tools.JPAUtil;
 
 public class Service {
-
     protected EntityManager entityManager;
-    private EntityManagerFactory entityManagerFactory;
 
     public Service(){
-        entityManagerFactory = Persistence.createEntityManagerFactory("LeTresBonCoin");
-        entityManager = entityManagerFactory.createEntityManager();
+        this.entityManager = JPAUtil.getEntityManager(); // ✅ Récupère l'instance unique
     }
 
     public EntityManager getEntityManager() {

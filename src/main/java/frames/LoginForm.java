@@ -133,8 +133,5 @@ public class LoginForm extends AbstractFrame {
 
     }
 
-    @Override
-    void homeActionPerformed(ActionEvent evt) {
 
-    }
 }

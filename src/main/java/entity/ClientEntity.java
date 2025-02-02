@@ -1,7 +1,7 @@
 package entity;
 
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
 public class ClientEntity {
 
     public ClientEntity(){
-        panier = new ArrayList<>();
+        panier = new CommandEntity();
     }
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -28,13 +28,21 @@ public class ClientEntity {
     private String name;
 
     @Transient
-    private List<VehicleEntity> panier;
+    private CommandEntity panier;
 
     @Basic
     private String password;
 
     public String getPassword() {
         return password;
+    }
+
+    public String getCreditCardNumber() {
+        return creditCardNumber;
+    }
+
+    public String getCveNumber() {
+        return cveNumber;
     }
 
     public void setPassword(String password) {
@@ -114,6 +122,10 @@ public class ClientEntity {
         return postalAddress;
     }
 
+    public void setCveNumber(String cveNumber) {
+        this.cveNumber = cveNumber;
+    }
+
     @Override
     public String toString() {
         return "ClientEntity{" +
@@ -137,19 +149,16 @@ public class ClientEntity {
         this.creditCardNumber = creditCardNumber;
     }
 
-    public List<VehicleEntity> getPanier() {
+    public CommandEntity getPanier() {
         return panier;
     }
 
-    public void setPanier(List<VehicleEntity> panier) {
+    public void addToPanier(VehicleEntity vehicle){
+        panier.getVehicles().add(vehicle);
+    }
+
+    public void setPanier(CommandEntity panier) {
         this.panier = panier;
     }
 
-    public void addToPanier(VehicleEntity vehicle) {
-        this.panier.add(vehicle);
-    }
-
-    public void removeFromPanier(VehicleEntity vehicle) {
-        this.panier.remove(vehicle);
-    }
 }
