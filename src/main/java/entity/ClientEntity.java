@@ -154,7 +154,9 @@ public class ClientEntity {
     }
 
     public void addToPanier(VehicleEntity vehicle){
-        panier.getVehicles().add(vehicle);
+        CommandLineEntity commandLine = new CommandLineEntity();
+        commandLine.setVehicle(vehicle);
+        panier.addCommandLine(commandLine);
     }
 
     public void setPanier(CommandEntity panier) {

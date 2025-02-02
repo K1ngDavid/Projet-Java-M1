@@ -20,6 +20,7 @@ public class MyCartForm extends AbstractFrame {
 
     public MyCartForm(ClientEntity client) throws IOException {
         super(client);
+        System.out.println(client.getPanier().getVehicles());
         this.commandService = new CommandService();
         initComponents();
         loadPendingCommands(); // 🔥 Charger les commandes en attente
@@ -218,11 +219,29 @@ public class MyCartForm extends AbstractFrame {
     /**
      * ✅ Effectue le paiement d'une commande spécifique.
      */
+    /**
+     * ✅ Ouvre la fenêtre de paiement avec une commande spécifique.
+     */
     private void payCommand(CommandEntity commande) {
-        commande.markAsPaid();
-        commandService.updateCommand(commande);
+        new PaymentForm(getClient(), List.of(commande)).setVisible(true);
+        System.out.println(commande.isPending());
         loadPendingCommands();
     }
+
+    /**
+     * ✅ Ouvre la fenêtre de paiement avec toutes les commandes en attente.
+     */
+    private void payAllCommands() {
+        List<CommandEntity> pendingCommands = commandService.getPendingCommands(getClient());
+        if (pendingCommands.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Aucune commande en attente de paiement.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        new PaymentForm(getClient(), pendingCommands).setVisible(true);
+        pnlCart.revalidate();
+        pnlCart.repaint();
+    }
+
 
     /**
      * ✅ Annule toutes les commandes.

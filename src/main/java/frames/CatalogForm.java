@@ -97,7 +97,7 @@ public class CatalogForm extends AbstractFrame {
      * ✅ Ajoute un véhicule à la commande en attente **ou en crée une nouvelle si nécessaire.**
      */
     private void addToCart(VehicleEntity vehicle) {
-        System.out.println("MON PANIER --> " + client.getPanier());
+        System.out.println("MON PANIER --> " + client.getPanier().getVehicles());
         EntityManager entityManager = commandService.getEntityManager();
 
         // ✅ Démarrer la transaction (si elle n'est pas déjà active)
@@ -142,13 +142,16 @@ public class CatalogForm extends AbstractFrame {
 
                 entityManager.persist(commandLine); // ✅ Ajout en base
                 client.addToPanier(vehicle); // ✅ Ajout au panier mémoire
-
+                System.out.println(client.getPanier().getVehicles());
                 JOptionPane.showMessageDialog(this, "Véhicule ajouté au panier !", "Ajout réussi", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "Ce véhicule est déjà dans votre panier.", "Déjà ajouté", JOptionPane.WARNING_MESSAGE);
             }
 
             entityManager.getTransaction().commit(); // ✅ Validation de la transaction
+
+            System.out.println("MON PANIER --> " + client.getPanier().getVehicles());
+
 
 
     }

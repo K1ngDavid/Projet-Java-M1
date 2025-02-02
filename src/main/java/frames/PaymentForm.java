@@ -2,149 +2,109 @@ package frames;
 
 import entity.ClientEntity;
 import entity.CommandEntity;
+import service.CommandService;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class PaymentForm extends AbstractFrame {
-
+public class PaymentForm extends JFrame {
+    private ClientEntity client;
     private JPanel pnlPayment;
-    private JTable tableCommands;
-    private DefaultTableModel tableModel;
-    private JButton btnPay;
+    private List<CommandEntity> commandsToPay;
+    private CommandService commandService;
 
-    public PaymentForm(ClientEntity client) {
-        super(client);
-        initComponents();
-        loadPendingCommands(); // Charge les commandes en attente
+    private JTextField txtCardNumber;
+    private JPasswordField txtCVV;
+    private JButton btnConfirmPayment;
+
+    public PaymentForm(ClientEntity client, List<CommandEntity> commandsToPay) {
+        this.client = client;
+        this.commandsToPay = commandsToPay;
+        this.commandService = new CommandService();
+
+        setTitle("Paiement des Commandes");
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        initUI();
     }
 
-    @Override
-    void accountActionPerformed(ActionEvent evt) {
-    }
+    private void initUI() {
+        pnlPayment.setLayout(new GridLayout(5, 1, 10, 10));
+        pnlPayment.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    private void initComponents() {
-        pnlPayment = new JPanel(new BorderLayout());
+        // 📌 Titre
+        JLabel lblTitle = new JLabel("💳 Paiement Sécurisé", SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
 
-        // 🔥 Définition des colonnes du tableau
-        String[] columnNames = {"ID Commande", "Date", "Montant Total (€)", "Status"};
-
-        // 🔥 Création du modèle de tableau (modifiable pour MAJ dynamique)
-        tableModel = new DefaultTableModel(columnNames, 0);
-        tableCommands = new JTable(tableModel);
-        tableCommands.setRowHeight(30); // Augmenter la hauteur des lignes
-        tableCommands.setGridColor(Color.LIGHT_GRAY); // Couleur des séparations
-        tableCommands.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
-        // 🔥 Styliser l'en-tête du tableau
-        JTableHeader header = tableCommands.getTableHeader();
-        header.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        header.setBackground(new Color(50, 115, 220)); // Bleu moderne
-        header.setForeground(Color.WHITE);
-        header.setReorderingAllowed(false);
-
-        // 🔥 Centrer le texte dans les cellules
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        for (int i = 0; i < tableCommands.getColumnCount(); i++) {
-            tableCommands.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        // 📌 Récupérer ou Demander le Numéro de Carte
+        txtCardNumber = new JTextField();
+        if (client.getCreditCardNumber() != null) {
+            txtCardNumber.setText(client.getCreditCardNumber());
+            txtCardNumber.setEditable(false); // 🔒 Ne pas modifier si déjà enregistré
+        } else {
+            txtCardNumber.setToolTipText("Entrez votre numéro de carte bancaire");
         }
 
-        // 🔥 Ajout du tableau dans un JScrollPane pour le rendre scrollable
-        JScrollPane scrollPane = new JScrollPane(tableCommands);
-        pnlPayment.add(scrollPane, BorderLayout.CENTER);
+        // 📌 CVV (toujours requis)
+        txtCVV = new JPasswordField();
+        txtCVV.setToolTipText("Entrez le code CVV");
 
-        // ✅ Bouton de paiement
-        btnPay = new JButton("Payer les commandes sélectionnées");
-        btnPay.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnPay.setBackground(new Color(76, 175, 80)); // Vert
-        btnPay.setForeground(Color.WHITE);
-        btnPay.setFocusPainted(false);
-        btnPay.setBorderPainted(false);
-        btnPay.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // 📌 Bouton de confirmation
+        btnConfirmPayment = new JButton("💳 Confirmer le Paiement");
+        btnConfirmPayment.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnConfirmPayment.setBackground(new Color(76, 175, 80));
+        btnConfirmPayment.setForeground(Color.WHITE);
+        btnConfirmPayment.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // 🔥 Action de paiement
-        btnPay.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                paySelectedCommands();
-            }
-        });
+        // 📌 Événement de paiement
+        btnConfirmPayment.addActionListener(e -> processPayment());
 
-        // ✅ Ajout du bouton dans un panneau en bas
-        JPanel panelSouth = new JPanel();
-        panelSouth.setLayout(new FlowLayout(FlowLayout.CENTER));
-        panelSouth.add(btnPay);
+        // 📌 Ajout des composants au panel
+        pnlPayment.add(lblTitle);
+        pnlPayment.add(new JLabel("Numéro de Carte :"));
+        pnlPayment.add(txtCardNumber);
+        pnlPayment.add(new JLabel("CVV :"));
+        pnlPayment.add(txtCVV);
 
-        pnlRoot.setLayout(new BorderLayout());
-        pnlRoot.add(pnlPayment, BorderLayout.CENTER);
-        pnlRoot.add(panelSouth, BorderLayout.SOUTH);
+        // 📌 Ajout du panel et bouton au frame
+        add(pnlPayment, BorderLayout.CENTER);
+        add(btnConfirmPayment, BorderLayout.SOUTH);
     }
 
     /**
-     * 🔥 Charge les commandes en attente de paiement et les affiche dans la JTable.
+     * 🔥 Vérifie les informations de paiement et marque les commandes comme payées.
      */
-    private void loadPendingCommands() {
-        ClientEntity client = this.getClient();
-        if (client == null) {
-            JOptionPane.showMessageDialog(this, "Erreur : Client non trouvé.", "Erreur", JOptionPane.ERROR_MESSAGE);
+    private void processPayment() {
+        String cardNumber = txtCardNumber.getText().trim();
+        String cvv = new String(txtCVV.getPassword()).trim();
+
+        if (cardNumber.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Veuillez entrer un numéro de carte valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (cvv.length() != 3) {
+            JOptionPane.showMessageDialog(this, "Le CVV doit être composé de 3 chiffres.", "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Récupération des commandes du client
-        List<CommandEntity> commandes = client.getCommands();
-
-        // Nettoyage du tableau avant d'ajouter de nouvelles données
-        tableModel.setRowCount(0);
-
-        for (CommandEntity commande : commandes) {
-            if ("En attente".equals(commande.getCommandStatus())) { // Filtrer les commandes en attente
-                Object[] rowData = {
-                        commande.getIdCommand(),
-                        commande.getCommandDate(),
-                        commande.getTotalAmount(), // Méthode à implémenter dans CommandEntity
-                        commande.getCommandStatus()
-                };
-                tableModel.addRow(rowData);
-            }
-        }
-    }
-
-    /**
-     * 🔥 Permet de marquer les commandes sélectionnées comme "Payées".
-     */
-    private void paySelectedCommands() {
-        int[] selectedRows = tableCommands.getSelectedRows();
-
-        if (selectedRows.length == 0) {
-            JOptionPane.showMessageDialog(this, "Veuillez sélectionner au moins une commande.", "Aucune sélection", JOptionPane.WARNING_MESSAGE);
-            return;
+        // 📌 Si la carte n'était pas enregistrée, la sauvegarder
+        if (client.getCreditCardNumber() == null) {
+            client.setCreditCardNumber(cardNumber);
         }
 
-        ClientEntity client = this.getClient();
-        List<CommandEntity> commandes = client.getCommands();
-
-        for (int row : selectedRows) {
-            int commandId = (int) tableModel.getValueAt(row, 0);
-
-            // Recherche de la commande correspondante
-            for (CommandEntity commande : commandes) {
-                if (commande.getIdCommand() == commandId) {
-                    commande.markAsPaid(); // Marquer la commande comme payée
-                }
-            }
+        // 📌 Marquer toutes les commandes sélectionnées comme "Payées"
+        for (CommandEntity commande : commandsToPay) {
+            commande.markAsPaid();
+            commandService.updateCommand(commande);
         }
 
-        // ✅ Affichage d'un message de confirmation
-        JOptionPane.showMessageDialog(this, "Paiement effectué avec succès !", "Paiement", JOptionPane.INFORMATION_MESSAGE);
-
-        // 🔄 Rafraîchissement de l'affichage
-        loadPendingCommands();
+        JOptionPane.showMessageDialog(this, "Paiement effectué avec succès ! ✅", "Paiement réussi", JOptionPane.INFORMATION_MESSAGE);
+        dispose(); // 📌 Fermer la fenêtre après paiement
     }
 }
