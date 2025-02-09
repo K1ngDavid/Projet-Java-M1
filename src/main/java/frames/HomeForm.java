@@ -14,8 +14,6 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,19 +44,19 @@ public class HomeForm extends AbstractFrame {
         jLabel1.setForeground(new Color(51, 51, 51));
         jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // 🔥 Création des panneaux principaux
+        // Création des panneaux principaux avec bordures
         Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
         panelCategories = createPanel("📂 Mes catégories", lineBorder);
-        panelCommandes = createPanel("📜 Mes commandes", lineBorder);
-        panelVoitures = createPanel("🚗 Mes voitures", lineBorder);
+        panelCommandes = createScrollablePanel("📜 Mes commandes", lineBorder);
+        panelVoitures = createScrollablePanel("🚗 Mes voitures", lineBorder);
         panelDepenses = createPanel("📊 Mes dépenses", lineBorder);
 
-        displayCommandes();  // 🔥 Remplit le panneau des commandes
-        displayVoitures();   // 🔥 Remplit le panneau des voitures
-        initDepensesPanel(); // 🔥 Initialise le graphique des dépenses
+        displayCommandes();
+        displayVoitures();
+        initDepensesPanel();
         displayCategories();
 
-        // 📌 Disposition des panneaux
+        // Disposition des panneaux
         GroupLayout layout = new GroupLayout(pnlRoot);
         pnlRoot.setLayout(layout);
         layout.setAutoCreateGaps(true);
@@ -112,12 +110,93 @@ public class HomeForm extends AbstractFrame {
     }
 
     /**
+     * 🔥 Crée un panneau avec un `JScrollPane` pour permettre le défilement.
+     */
+    private JPanel createScrollablePanel(String title, Border border) {
+        JPanel containerPanel = new JPanel(new BorderLayout());
+        containerPanel.setBorder(border);
+
+        JLabel label = new JLabel(title, SwingConstants.CENTER);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        containerPanel.add(label, BorderLayout.NORTH);
+        containerPanel.add(scrollPane, BorderLayout.CENTER);
+
+        return containerPanel;
+    }
+
+    /**
+     * 🔥 Affiche les voitures sous forme de cartes bien organisées dans un panneau avec scroll.
+     */
+    private void displayVoitures() {
+        JPanel contentPanel = (JPanel) ((JScrollPane) panelVoitures.getComponent(1)).getViewport().getView();
+        contentPanel.removeAll();
+
+        List<VehicleEntity> voitures = getClient().getVehicles();
+
+        if (voitures != null && !voitures.isEmpty()) {
+            for (VehicleEntity voiture : voitures) {
+                contentPanel.add(createVehicleCard(voiture));
+            }
+        } else {
+            contentPanel.add(new JLabel("🚗 Aucune voiture disponible", SwingConstants.CENTER));
+        }
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    private Component createVehicleCard(VehicleEntity vehicle) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+
+        JLabel nameLabel = new JLabel("🚗 " + vehicle.getModel().getBrandName() + " " + vehicle.getModel().getModelName(), SwingConstants.CENTER);
+        JLabel priceLabel = new JLabel("💰 " + vehicle.getPrice().toString() + " €", SwingConstants.CENTER);
+
+        card.add(nameLabel, BorderLayout.NORTH);
+        card.add(priceLabel, BorderLayout.SOUTH);
+        return card;
+    }
+
+    /**
+     * 🔥 Affiche les commandes du client sous forme de cartes avec scroll.
+     */
+    private void displayCommandes() {
+        JPanel contentPanel = (JPanel) ((JScrollPane) panelCommandes.getComponent(1)).getViewport().getView();
+        contentPanel.removeAll();
+
+        List<CommandEntity> commandes = commandService.getPaidCommands(getClient());
+
+        if (commandes != null && !commandes.isEmpty()) {
+            for (CommandEntity commande : commandes) {
+                JLabel cmdLabel = new JLabel("<html>Commande #" + commande.getIdCommand() + "🗓️   " +
+                        commande.getCommandStatus() + "<br>" +
+                        commande.getCommandDate() + "<br>💰 " + commande.getTotalAmount() + " €</html>");
+                cmdLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                contentPanel.add(cmdLabel);
+            }
+        } else {
+            contentPanel.add(new JLabel("📜 Aucune commande disponible", SwingConstants.CENTER));
+        }
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    /**
      * 📊 Initialisation du panel des dépenses avec un graphique.
      */
     private void initDepensesPanel() {
         panelDepenses.setLayout(new BorderLayout());
 
-        // ✅ Création du panneau pour le ComboBox
+        // ✅ Création du panneau pour la ComboBox
         JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         // ✅ Ajout de la ComboBox pour la sélection de période
@@ -136,15 +215,20 @@ public class HomeForm extends AbstractFrame {
         loadChart("Année");
     }
 
+    /**
+     * 📊 Met à jour le graphique en fonction de la période sélectionnée.
+     */
     private void updateChart() {
         String period = (String) cbPeriodicity.getSelectedItem();
         loadChart(period);
     }
 
+    /**
+     * 📊 Charge et affiche un graphique des dépenses sur une période donnée.
+     */
     private void loadChart(String period) {
-        panelDepenses.removeAll();  // ❌ Mauvais : Efface tout !
-        panelDepenses.removeAll();  // ✅ Correct : Supprime uniquement l'ancien graphique
-        panelDepenses.add(cbPeriodicity, BorderLayout.NORTH);  // ✅ S'assurer que le ComboBox reste
+        panelDepenses.removeAll();  // ✅ Supprime l'ancien contenu
+        panelDepenses.add(cbPeriodicity, BorderLayout.NORTH);  // ✅ On garde la ComboBox
 
         List<CommandEntity> paidCommands = commandService.getPaidCommands(getClient());
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -185,7 +269,9 @@ public class HomeForm extends AbstractFrame {
         panelDepenses.repaint();
     }
 
-
+    /**
+     * 🔥 Affiche les catégories de véhicules achetés sous forme de cartes.
+     */
     private void displayCategories() {
         panelCategories.setLayout(new GridLayout(0, 2, 10, 10)); // ✅ Affichage en grille (2 colonnes)
         panelCategories.removeAll(); // 🔥 Nettoyage avant ajout
@@ -220,10 +306,13 @@ public class HomeForm extends AbstractFrame {
     }
 
 
+    /**
+     * 🔥 Calcule le total des dépenses pour une période donnée.
+     */
     private double getTotalForPeriod(List<CommandEntity> commands, LocalDate date, String period) {
         return commands.stream()
                 .filter(cmd -> {
-                    LocalDate cmdDate = cmd.getCommandDate().toLocalDate(); // ✅ Conversion propre
+                    LocalDate cmdDate = cmd.getCommandDate().toLocalDate();
                     return switch (period) {
                         case "Jour" -> cmdDate.isEqual(date);
                         case "Mois" -> cmdDate.getMonth() == date.getMonth() && cmdDate.getYear() == date.getYear();
@@ -234,59 +323,6 @@ public class HomeForm extends AbstractFrame {
                 .sum();
     }
 
-
-    /**
-     * 🔥 Affiche les voitures sous forme de cartes bien organisées dans un panneau.
-     */
-    private void displayVoitures() {
-        panelVoitures.setLayout(new GridLayout(0, 3, 10, 10));
-        List<VehicleEntity> voitures = getClient().getVehicles();
-
-        if (voitures != null && !voitures.isEmpty()) {
-            for (VehicleEntity voiture : voitures) {
-                panelVoitures.add(createVehicleCard(voiture));
-            }
-        } else {
-            panelVoitures.add(new JLabel("🚗 Aucune voiture disponible", SwingConstants.CENTER));
-        }
-    }
-
-    private Component createVehicleCard(VehicleEntity vehicle) {
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-
-        JLabel nameLabel = new JLabel("🚗 " + vehicle.getModel().getBrandName() + " " + vehicle.getModel().getModelName(), SwingConstants.CENTER);
-        JLabel priceLabel = new JLabel("💰 " + vehicle.getPrice().toString() + " €", SwingConstants.CENTER);
-
-        card.add(nameLabel, BorderLayout.NORTH);
-        card.add(priceLabel, BorderLayout.SOUTH);
-        return card;
-    }
-
-
-
-
-
-
-    /**
-     * 🔥 Affiche les commandes du client sous forme de cartes.
-     */
-    private void displayCommandes() {
-        panelCommandes.setLayout(new BoxLayout(panelCommandes, BoxLayout.Y_AXIS));
-        List<CommandEntity> commandes = commandService.getPaidCommands(getClient());
-
-        if (commandes != null && !commandes.isEmpty()) {
-            for (CommandEntity commande : commandes) {
-                JLabel cmdLabel = new JLabel("<html>Commande #" + commande.getIdCommand() + "🗓️   " +
-                        commande.getCommandStatus() + "<br>" +
-                        commande.getCommandDate() + "<br>💰 " + commande.getTotalAmount() + " €</html>");
-                cmdLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                panelCommandes.add(cmdLabel);
-            }
-        } else {
-            panelCommandes.add(new JLabel("📜 Aucune commande disponible", SwingConstants.CENTER));
-        }
-    }
 
     @Override
     void accountActionPerformed(ActionEvent evt) {

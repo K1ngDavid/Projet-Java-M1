@@ -15,13 +15,13 @@ import java.util.List;
 public class MyCartForm extends AbstractFrame {
     private JPanel pnlCart;
     private JLabel lblTitre;
-    private JButton btnSaveCart, btnCancelAll;
+    private JButton btnSaveCart, btnCancelAll, btnPayAll;
     private CommandService commandService;
 
     public MyCartForm(ClientEntity client) throws IOException {
         super(client);
-        System.out.println(client.getPanier().getVehicles());
         this.commandService = new CommandService();
+        System.out.println(client.getPanier().getVehicles());
         initComponents();
         loadPendingCommands(); // 🔥 Charger les commandes en attente
     }
@@ -48,12 +48,15 @@ public class MyCartForm extends AbstractFrame {
 
         btnSaveCart = createStyledButton("💾 Sauvegarder Panier");
         btnCancelAll = createStyledButton("🗑️ Annuler Toutes les Commandes");
+        btnPayAll = createStyledButton("🛍 Acheter Toutes les Commandes"); // 🔥 Nouveau bouton
 
         btnSaveCart.addActionListener(e -> saveCart());
         btnCancelAll.addActionListener(e -> cancelAllCommands());
+        btnPayAll.addActionListener(e -> payAllCommands()); // 🔥 Action pour acheter tout
 
         pnlBottom.add(btnSaveCart);
         pnlBottom.add(btnCancelAll);
+        pnlBottom.add(btnPayAll); // 🔥 Ajout du nouveau bouton
 
         pnlRoot.add(pnlBottom, BorderLayout.SOUTH);
     }
@@ -79,6 +82,7 @@ public class MyCartForm extends AbstractFrame {
         pnlCart.removeAll(); // ✅ Nettoyer l'affichage
         List<CommandEntity> commandes = commandService.getPendingCommands(getClient());
 
+
         if (commandes.isEmpty()) {
             JLabel lblNoCommands = new JLabel("Aucune commande en attente.", SwingConstants.CENTER);
             lblNoCommands.setFont(new Font("Segoe UI", Font.ITALIC, 16));
@@ -87,6 +91,7 @@ public class MyCartForm extends AbstractFrame {
         }
 
         for (CommandEntity commande : commandes) {
+            System.out.println(commande.getVehicles());
             pnlCart.add(createCommandPanel(commande));
         }
 
@@ -147,7 +152,7 @@ public class MyCartForm extends AbstractFrame {
         JPanel card = new JPanel(new BorderLayout());
         card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
-        JLabel imageLabel = new JLabel(new ImageIcon(getClass().getResource("/images/car.png")));
+        JLabel imageLabel = new JLabel(new ImageIcon(getClass().getResource(vehicle.getImageUrl())));
         JLabel nameLabel = new JLabel("🚗 "  + vehicle.getModel().getModelName(), SwingConstants.CENTER);
         JLabel priceLabel = new JLabel("💰 " + vehicle.getPrice().toString() + " €", SwingConstants.CENTER);
 
@@ -224,6 +229,7 @@ public class MyCartForm extends AbstractFrame {
      */
     private void payCommand(CommandEntity commande) {
         new PaymentForm(getClient(), List.of(commande)).setVisible(true);
+        dispose();
         System.out.println(commande.isPending());
         loadPendingCommands();
     }
@@ -238,6 +244,7 @@ public class MyCartForm extends AbstractFrame {
             return;
         }
         new PaymentForm(getClient(), pendingCommands).setVisible(true);
+        dispose();
         pnlCart.revalidate();
         pnlCart.repaint();
     }

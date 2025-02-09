@@ -5,6 +5,7 @@ import enumerations.TransmissionType;
 import enumerations.VehicleCategory;
 import enumerations.VehicleType;
 import jakarta.persistence.*;
+import service.VehicleService;
 
 import java.math.BigDecimal;
 
@@ -14,6 +15,8 @@ import java.math.BigDecimal;
 @DiscriminatorColumn(name = "vehicleType", discriminatorType = DiscriminatorType.STRING) // Colonne pour différencier les types de véhicules
 public abstract class VehicleEntity {
 
+    @Transient
+    protected VehicleService vehicleService;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idVehicle")
@@ -149,5 +152,35 @@ public abstract class VehicleEntity {
 
     public void setModel(ModelEntity model) {
         this.model = model;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (this.imageUrl == null) {
+            this.imageUrl = getDefaultImageUrl();
+        }
+    }
+
+    /**
+     * ✅ Méthode à surcharger dans les sous-classes pour définir l'image par défaut.
+     */
+    protected String getDefaultImageUrl() {
+        return "/images/car.png"; // Valeur par défaut pour les véhicules génériques
+    }
+
+    @Override
+    public String toString() {
+        return "<html>" +
+                "ID: " + getIdVehicle() + "<br>" +
+                "Status: " + getStatus() + "<br>" +
+                "Prix: " + getPrice() + " €<br>" +
+                "Pays d'origine: " + getCountryOfOrigin() + "<br>" +
+                "Modèle: " + (getModel() != null ? getModel().getModelName() : "N/A") + "<br>" +
+                "Puissance: " + getHorsePower() + " HP<br>" +
+                "Source d'énergie: " + getVehiclePowerSource() + "<br>" +
+                "Type: " + getVehicleType() + "<br>" +
+                "Nombre de portes: " + getNumberOfDoors() + "<br>" +
+                "Transmission: " + getTransmissionType() +
+                "</html>";
     }
 }

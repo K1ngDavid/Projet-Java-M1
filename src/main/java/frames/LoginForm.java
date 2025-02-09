@@ -2,13 +2,10 @@ package frames;
 
 import entity.ClientEntity;
 import service.ClientService;
-
 import javax.imageio.ImageIO;
 import javax.security.auth.login.LoginException;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
@@ -41,30 +38,20 @@ public class LoginForm extends JFrame {
     }
 
     /**
-     * 🔥 Initialise les composants graphiques avec un style UI/UX amélioré
+     * 🔥 Initialisation des composants avec un style moderne
      */
     private void initComponents() {
-        JPanel pnlRoot = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
-                GradientPaint gradient = new GradientPaint(0, 0, new Color(40, 44, 52), getWidth(), getHeight(), new Color(72, 61, 139));
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-            }
-        };
-        pnlRoot.setLayout(new BorderLayout());
+        JPanel pnlRoot = new JPanel(new BorderLayout());
         pnlRoot.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // ✅ 📸 Panel pour l'image
+        // ✅ 📸 Panel Image
         JPanel pnlImage = new JPanel(new BorderLayout());
         pnlImage.setOpaque(false);
         lblImage = new JLabel();
         loadCarImage();
         pnlImage.add(lblImage, BorderLayout.CENTER);
 
-        // ✅ 📋 Panel de connexion (Glass UI)
+        // ✅ 📋 Panel Connexion
         JPanel pnlLogin = new JPanel();
         pnlLogin.setLayout(new BoxLayout(pnlLogin, BoxLayout.Y_AXIS));
         pnlLogin.setOpaque(false);
@@ -72,20 +59,17 @@ public class LoginForm extends JFrame {
 
         JPanel glassPanel = new JPanel();
         glassPanel.setLayout(new BoxLayout(glassPanel, BoxLayout.Y_AXIS));
-        glassPanel.setBackground(new Color(255, 255, 255, 100)); // 🎨 Effet Glass UI
+        glassPanel.setBackground(new java.awt.Color(16, 84, 129)); // 🎨 Effet "Glass UI"
         glassPanel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
-        glassPanel.setOpaque(true);
-        glassPanel.setPreferredSize(new Dimension(400, 350));
 
         JLabel lblConnectez = new JLabel("🔑 Connexion");
         lblConnectez.setFont(new Font("Segoe UI", Font.BOLD, 26));
-        lblConnectez.setForeground(Color.DARK_GRAY);
+        lblConnectez.setForeground(Color.WHITE);
         lblConnectez.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         glassPanel.add(lblConnectez);
-        glassPanel.add(Box.createVerticalStrut(20));
 
-        // 🔥 Champs d'entrée modernes
+        // 🔥 Champs d'entrée stylisés
         emailEntry = createStyledTextField("✉ Email");
         pswdEntry = createStyledPasswordField("🔒 Mot de passe");
 
@@ -94,19 +78,18 @@ public class LoginForm extends JFrame {
         glassPanel.add(pswdEntry);
         glassPanel.add(Box.createVerticalStrut(10));
 
-        // ✅ 🔴 Label pour afficher les erreurs avec animation
+        // ✅ 🔴 Label Erreur
         lblError = new JLabel("", SwingConstants.CENTER);
         lblError.setForeground(Color.RED);
         lblError.setFont(new Font("Arial", Font.BOLD, 14));
         lblError.setVisible(false);
-        pnlLogin.add(lblError);
+        glassPanel.add(lblError);
         glassPanel.add(Box.createVerticalStrut(10));
 
-        // ✅ Bouton Connexion avec effet hover
+        // ✅ Boutons modernisés
         connexionButton = createStyledButton("🚀 Se Connecter", new Color(76, 175, 80));
         connexionButton.addActionListener(e -> loginVerification());
 
-        // ✅ Bouton Inscription
         sInscrireButton = createStyledButton("📝 S'inscrire", new Color(33, 150, 243));
 
         glassPanel.add(connexionButton);
@@ -119,19 +102,10 @@ public class LoginForm extends JFrame {
         pnlRoot.add(pnlImage, BorderLayout.WEST);
         pnlRoot.add(pnlLogin, BorderLayout.CENTER);
         setContentPane(pnlRoot);
-
-        sInscrireButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-                new RegisterForm().setVisible(true);
-            }
-        });
     }
 
-
     /**
-     * 🔥 Vérification du login avec meilleure gestion des erreurs
+     * 🔥 Vérification du login avec animation d'erreur
      */
     private void loginVerification() {
         try {
@@ -142,22 +116,14 @@ public class LoginForm extends JFrame {
                 throw new LoginException("❌ Veuillez remplir tous les champs !");
             }
 
-            if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
-                throw new LoginException("⚠ Email invalide !");
-            }
-
-            if (!password.matches("^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*+\\-]).{8,}$")) {
-                throw new LoginException("⚠ Mot de passe invalide !");
-            }
-
-            if (clientService.clientCanLogIn(email, password)) {
-                System.out.println("dazniodaznidazndozaindazon");
-                ClientEntity client = clientService.getClientByEmail(email);
-                new HomeForm(client);
-                dispose();
-            } else {
+            if (!clientService.clientCanLogIn(email, password)) {
                 throw new LoginException("❌ Identifiants incorrects !");
             }
+
+            ClientEntity client = clientService.getClientByEmail(email);
+            new HomeForm(client);
+            dispose();
+
         } catch (LoginException e) {
             lblError.setText(e.getMessage());
             lblError.setVisible(true);
@@ -166,7 +132,7 @@ public class LoginForm extends JFrame {
     }
 
     /**
-     * 📸 Charge et ajuste l'image de la voiture
+     * 📸 Charge l'image de la voiture
      */
     private void loadCarImage() {
         try {
@@ -180,21 +146,18 @@ public class LoginForm extends JFrame {
     }
 
     /**
-     * 🎨 Crée un champ de texte moderne
+     * 🎨 Crée un champ de texte stylisé
      */
     private JTextField createStyledTextField(String placeholder) {
         JTextField field = new JTextField(placeholder);
         field.setFont(new Font("Arial", Font.PLAIN, 16));
         field.setForeground(Color.DARK_GRAY);
-        field.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
-                BorderFactory.createEmptyBorder(8, 8, 8, 8)
-        ));
+
         return field;
     }
 
     /**
-     * 🔑 Crée un champ de mot de passe moderne
+     * 🔑 Crée un champ de mot de passe stylisé
      */
     private JPasswordField createStyledPasswordField(String placeholder) {
         JPasswordField field = new JPasswordField(placeholder);
@@ -204,7 +167,7 @@ public class LoginForm extends JFrame {
     }
 
     /**
-     * 🎨 Crée un bouton moderne avec effet hover
+     * 🎨 Crée un bouton modernisé
      */
     private JButton createStyledButton(String text, Color color) {
         JButton button = new JButton(text);

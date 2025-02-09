@@ -1,5 +1,6 @@
 package service;
 
+import entity.ClientEntity;
 import entity.VehicleEntity;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
@@ -47,6 +48,24 @@ public class VehicleService extends Service {
     public VehicleEntity getVehicleById(int vehicleId) {
         try {
             return entityManager.find(VehicleEntity.class, vehicleId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 🔥 Récupère les véhicules achetés ou possédés par un client.
+     *
+     * @param client L'entité ClientEntity.
+     * @return Liste des véhicules du client.
+     */
+    public List<VehicleEntity> getVehiclesByClient(ClientEntity client) {
+        try {
+            String hql = "SELECT v FROM VehicleEntity v WHERE v.client.idClient = :clientId";
+            TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
+            query.setParameter("clientId", client.getIdClient());
+            return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

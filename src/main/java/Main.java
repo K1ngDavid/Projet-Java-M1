@@ -7,8 +7,9 @@ import tools.JPAUtil;
 public class Main {
     public static void main(String[] args) {
         try {
-            LoginForm loginForm = new LoginForm();
-            loginForm.setVisible(true);
+            ClientService clientService = new ClientService();
+            ClientEntity client = clientService.getClientById(2);
+            HomeForm homeForm = new HomeForm(client);
         } catch (Exception e) {
             e.printStackTrace();
         }
