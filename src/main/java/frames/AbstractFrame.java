@@ -30,6 +30,7 @@ public abstract class AbstractFrame extends JFrame {
     protected JButton myCart;
 
     protected JButton myCars;
+    protected JButton myCommands;
 
     protected JButton account;
     protected SideMenuPanel sp;
@@ -76,6 +77,7 @@ public abstract class AbstractFrame extends JFrame {
         pnlRoot = new JPanel();
         catalogue = new JButton();
         myCars = new JButton();
+        myCommands = new JButton();
         myCart = new JButton();
         home = new JButton();
         account = new JButton();
@@ -174,6 +176,32 @@ public abstract class AbstractFrame extends JFrame {
             }
         });
 
+        myCommands.setFont(new java.awt.Font("Microsoft PhagsPa", 0, 14)); // NOI18N
+        myCommands.setForeground(new java.awt.Color(195, 217, 233));
+        myCommands.setIcon(new javax.swing.ImageIcon()); // NOI18N
+        myCommands.setText("My Commands");
+        myCommands.setBorderPainted(false);
+        myCommands.setContentAreaFilled(false);
+        myCommands.setFocusPainted(false);
+        myCommands.setHideActionText(true);
+        myCommands.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        myCommands.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        myCommands.setIconTextGap(20);
+        myCommands.setMargin(new java.awt.Insets(2, 0, 2, 14));
+        myCommands.setMinimumSize(new java.awt.Dimension(0, 35));
+        myCommands.setPreferredSize(new java.awt.Dimension(50, 574));
+
+        myCommands.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    myCommandsActionPerformed(e);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
         account.setFont(new java.awt.Font("Microsoft PhagsPa", 0, 14)); // NOI18N
         account.setForeground(new java.awt.Color(195, 217, 233));
         account.setIcon(new javax.swing.ImageIcon()); // NOI18N
@@ -250,6 +278,7 @@ public abstract class AbstractFrame extends JFrame {
                         .addComponent(catalogue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(myCart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(myCars, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(myCommands, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(account, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE) // ✅ Add to horizontal group
         );
@@ -267,6 +296,8 @@ public abstract class AbstractFrame extends JFrame {
                                 .addComponent(myCart, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(myCars, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(myCommands, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(account, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -332,6 +363,11 @@ public abstract class AbstractFrame extends JFrame {
         MyCarsForm myCarsForm = new MyCarsForm(client);
         myCarsForm.setVisible(true);
     }
+    private void myCommandsActionPerformed(ActionEvent event) throws IOException {
+            dispose();
+            MyCommandsForm myCommandsForm = new MyCommandsForm(client);
+            myCommandsForm.setVisible(true);
+        }
 
     private void catalogActionPerformed(ActionEvent evt) throws IOException {
         dispose();
