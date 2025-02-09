@@ -3,51 +3,64 @@ package frames;
 import entity.ClientEntity;
 import entity.CommandEntity;
 import entity.VehicleEntity;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
 import service.CommandService;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class HomeForm extends AbstractFrame {
-
     private CommandService commandService;
+    private JPanel panelDepenses;
+    private JPanel panelVoitures;
+    private JPanel panelCommandes;
+    private JPanel panelCategories;
+    private JComboBox<String> cbPeriodicity;
+
     public HomeForm(ClientEntity client) {
-        super(client); // Appelle le constructeur parent pour initialiser le client
+        super(client);
         if (client == null) {
             throw new IllegalArgumentException("Le client ne peut pas être null !");
         }
         commandService = new CommandService();
         initComponents();
         this.pack();
-        System.out.println(client.getIdClient());
     }
 
     private void initComponents() {
         pnlRoot.setBackground(new Color(210, 231, 255));
 
-        JLabel jLabel1 = new JLabel("Home");
+        JLabel jLabel1 = new JLabel("🏠 Home");
         jLabel1.setFont(new Font("Segoe UI Semibold", Font.BOLD, 24));
         jLabel1.setForeground(new Color(51, 51, 51));
         jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Border pour les panels
-        Border lineBorder1 = BorderFactory.createLineBorder(Color.BLACK);
+        // 🔥 Création des panneaux principaux
+        Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
+        panelCategories = createPanel("📂 Mes catégories", lineBorder);
+        panelCommandes = createPanel("📜 Mes commandes", lineBorder);
+        panelVoitures = createPanel("🚗 Mes voitures", lineBorder);
+        panelDepenses = createPanel("📊 Mes dépenses", lineBorder);
 
-        // 🔥 Création des panneaux sans taille fixe pour permettre l'expansion
-        JPanel panelCategories = createPanel("Mes catégories", lineBorder1);
-        JPanel panelCommandes = createPanel("Mes commandes", lineBorder1);
-        displayCommandes(panelCommandes); // Remplit le panneau des commandes
-        JPanel panelVoitures = createPanel("Mes voitures", lineBorder1);
-        displayVoitures(panelVoitures); // Remplit le panneau des voitures
-        JPanel panelDepenses = createPanel("Mes dépenses", lineBorder1);
+        displayCommandes();  // 🔥 Remplit le panneau des commandes
+        displayVoitures();   // 🔥 Remplit le panneau des voitures
+        initDepensesPanel(); // 🔥 Initialise le graphique des dépenses
+        displayCategories();
 
-        // Utilisation de GroupLayout pour une meilleure responsivité
+        // 📌 Disposition des panneaux
         GroupLayout layout = new GroupLayout(pnlRoot);
         pnlRoot.setLayout(layout);
-
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
@@ -57,14 +70,12 @@ public class HomeForm extends AbstractFrame {
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap(20, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(panelCategories, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                                        .addComponent(panelVoitures, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                                )
+                                        .addComponent(panelCategories)
+                                        .addComponent(panelVoitures))
                                 .addGap(40)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(panelDepenses, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                                        .addComponent(panelCommandes, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                                )
+                                        .addComponent(panelDepenses)
+                                        .addComponent(panelCommandes))
                                 .addContainerGap(20, Short.MAX_VALUE)
                         )
         );
@@ -75,14 +86,12 @@ public class HomeForm extends AbstractFrame {
                         .addComponent(jLabel1)
                         .addGap(30)
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(panelCategories, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                                .addComponent(panelDepenses, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                        )
+                                .addComponent(panelCategories)
+                                .addComponent(panelDepenses))
                         .addGap(30)
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(panelVoitures, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                                .addComponent(panelCommandes, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-                        )
+                                .addComponent(panelVoitures)
+                                .addComponent(panelCommandes))
                         .addGap(30)
         );
     }
@@ -103,71 +112,179 @@ public class HomeForm extends AbstractFrame {
     }
 
     /**
-     * 🔥 Affiche les voitures sous forme de liste dans un panneau vertical.
+     * 📊 Initialisation du panel des dépenses avec un graphique.
      */
-    private void displayVoitures(JPanel panelVoitures) {
-        panelVoitures.setLayout(new BoxLayout(panelVoitures, BoxLayout.Y_AXIS));
-        ClientEntity client = this.getClient(); // Récupère le client
+    private void initDepensesPanel() {
+        panelDepenses.setLayout(new BorderLayout());
 
-        // Vérification de nullité du client
-        if (client == null) {
-            JLabel errorLabel = new JLabel("Erreur : client non initialisé.");
-            errorLabel.setForeground(Color.RED);
-            errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panelVoitures.add(errorLabel);
-            return;
+        // ✅ Création du panneau pour le ComboBox
+        JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        // ✅ Ajout de la ComboBox pour la sélection de période
+        String[] periods = {"Jour", "Mois", "Année"};
+        cbPeriodicity = new JComboBox<>(periods);
+        cbPeriodicity.setSelectedIndex(2);
+        cbPeriodicity.addActionListener(e -> updateChart());
+
+        panelTop.add(new JLabel("Période : "));
+        panelTop.add(cbPeriodicity);
+
+        // ✅ Ajout du panneau supérieur (ComboBox)
+        panelDepenses.add(panelTop, BorderLayout.NORTH);
+
+        // ✅ Charger le graphique par défaut (Année)
+        loadChart("Année");
+    }
+
+    private void updateChart() {
+        String period = (String) cbPeriodicity.getSelectedItem();
+        loadChart(period);
+    }
+
+    private void loadChart(String period) {
+        panelDepenses.removeAll();  // ❌ Mauvais : Efface tout !
+        panelDepenses.removeAll();  // ✅ Correct : Supprime uniquement l'ancien graphique
+        panelDepenses.add(cbPeriodicity, BorderLayout.NORTH);  // ✅ S'assurer que le ComboBox reste
+
+        List<CommandEntity> paidCommands = commandService.getPaidCommands(getClient());
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        LocalDate now = LocalDate.now();
+
+        switch (period) {
+            case "Jour":
+                for (int i = 6; i >= 0; i--) {
+                    LocalDate date = now.minusDays(i);
+                    double total = getTotalForPeriod(paidCommands, date, "Jour");
+                    dataset.addValue(total, "Dépenses", date.toString());
+                }
+                break;
+            case "Mois":
+                for (int i = 6; i >= 0; i--) {
+                    LocalDate date = now.minusMonths(i);
+                    double total = getTotalForPeriod(paidCommands, date, "Mois");
+                    dataset.addValue(total, "Dépenses", date.getMonth().toString() + " " + date.getYear());
+                }
+                break;
+            case "Année":
+                for (int i = 4; i >= 0; i--) {
+                    LocalDate date = now.minusYears(i);
+                    double total = getTotalForPeriod(paidCommands, date, "Année");
+                    dataset.addValue(total, "Dépenses", String.valueOf(date.getYear()));
+                }
+                break;
         }
 
-        List<VehicleEntity> voitures = client.getVehicles();
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Dépenses par " + period, "Période", "Montant (€)", dataset
+        );
+
+        // ✅ Ajouter le graphique dans le panneau central
+        panelDepenses.add(new ChartPanel(chart), BorderLayout.CENTER);
+
+        panelDepenses.revalidate();
+        panelDepenses.repaint();
+    }
+
+
+    private void displayCategories() {
+        panelCategories.setLayout(new GridLayout(0, 2, 10, 10)); // ✅ Affichage en grille (2 colonnes)
+        panelCategories.removeAll(); // 🔥 Nettoyage avant ajout
+
+        Set<String> categories = new HashSet<>();
+        for (CommandEntity commande : commandService.getPaidCommands(getClient())) {
+            for (VehicleEntity vehicle : commande.getVehicles()) {
+                categories.add(vehicle.getVehicleType().toString()); // ✅ Ajouter la catégorie unique
+            }
+        }
+
+        if (categories.isEmpty()) {
+            JLabel noCategoriesLabel = new JLabel("📌 Aucune catégorie disponible", SwingConstants.CENTER);
+            noCategoriesLabel.setForeground(Color.RED);
+            panelCategories.add(noCategoriesLabel);
+        } else {
+            for (String categorie : categories) {
+                JPanel categoryPanel = new JPanel(new BorderLayout());
+                categoryPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+                categoryPanel.setBackground(new Color(230, 230, 250));
+
+                JLabel categoryLabel = new JLabel("🚘 " + categorie, SwingConstants.CENTER);
+                categoryLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                categoryPanel.add(categoryLabel, BorderLayout.CENTER);
+
+                panelCategories.add(categoryPanel);
+            }
+        }
+
+        panelCategories.revalidate();
+        panelCategories.repaint();
+    }
+
+
+    private double getTotalForPeriod(List<CommandEntity> commands, LocalDate date, String period) {
+        return commands.stream()
+                .filter(cmd -> {
+                    LocalDate cmdDate = cmd.getCommandDate().toLocalDate(); // ✅ Conversion propre
+                    return switch (period) {
+                        case "Jour" -> cmdDate.isEqual(date);
+                        case "Mois" -> cmdDate.getMonth() == date.getMonth() && cmdDate.getYear() == date.getYear();
+                        default -> cmdDate.getYear() == date.getYear();
+                    };
+                })
+                .mapToDouble(cmd -> cmd.getTotalAmount() != null ? cmd.getTotalAmount().doubleValue() : 0.0)
+                .sum();
+    }
+
+
+    /**
+     * 🔥 Affiche les voitures sous forme de cartes bien organisées dans un panneau.
+     */
+    private void displayVoitures() {
+        panelVoitures.setLayout(new GridLayout(0, 3, 10, 10));
+        List<VehicleEntity> voitures = getClient().getVehicles();
+
         if (voitures != null && !voitures.isEmpty()) {
             for (VehicleEntity voiture : voitures) {
-                String brandName = (voiture.getModel() != null) ? voiture.getModel().getBrandName() : "Marque inconnue";
-                String modelName = (voiture.getModel() != null) ? voiture.getModel().getModelName() : "Modèle inconnu";
-
-                JLabel voitureLabel = new JLabel(brandName + " - " + modelName);
-                voitureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                panelVoitures.add(voitureLabel);
+                panelVoitures.add(createVehicleCard(voiture));
             }
         } else {
-            JLabel noVoituresLabel = new JLabel("<html>Aucune voiture<br>disponible.</html>");
-            noVoituresLabel.setForeground(Color.RED);
-            noVoituresLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panelVoitures.add(noVoituresLabel);
+            panelVoitures.add(new JLabel("🚗 Aucune voiture disponible", SwingConstants.CENTER));
         }
     }
 
+    private Component createVehicleCard(VehicleEntity vehicle) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+
+        JLabel nameLabel = new JLabel("🚗 " + vehicle.getModel().getBrandName() + " " + vehicle.getModel().getModelName(), SwingConstants.CENTER);
+        JLabel priceLabel = new JLabel("💰 " + vehicle.getPrice().toString() + " €", SwingConstants.CENTER);
+
+        card.add(nameLabel, BorderLayout.NORTH);
+        card.add(priceLabel, BorderLayout.SOUTH);
+        return card;
+    }
+
+
+
+
+
+
     /**
-     * 🔥 Affiche les commandes sous forme de liste dans un panneau vertical.
+     * 🔥 Affiche les commandes du client sous forme de cartes.
      */
-    private void displayCommandes(JPanel panelCommandes) {
+    private void displayCommandes() {
         panelCommandes.setLayout(new BoxLayout(panelCommandes, BoxLayout.Y_AXIS));
-        ClientEntity client = this.getClient();
+        List<CommandEntity> commandes = commandService.getPaidCommands(getClient());
 
-        if (client == null) {
-            JLabel errorLabel = new JLabel("Erreur : client non initialisé.");
-            errorLabel.setForeground(Color.RED);
-            errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panelCommandes.add(errorLabel);
-            return;
-        }
-
-        List<CommandEntity> commandes = commandService.getPaidCommands(client);
         if (commandes != null && !commandes.isEmpty()) {
             for (CommandEntity commande : commandes) {
-                JLabel commandeLabel = new JLabel(
-                        "<html>Commande ID: " + commande.getIdCommand() +
-                                "<br>Status: " + commande.getCommandStatus() +
-                                "<br>Date: " + commande.getCommandDate() + "</html>"
-                );
-                commandeLabel.setBorder(BorderFactory.createLineBorder(Color.black));
-                commandeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                panelCommandes.add(commandeLabel);
+                JLabel cmdLabel = new JLabel("<html>Commande #" + commande.getIdCommand() + "🗓️   " +
+                        commande.getCommandStatus() + "<br>" +
+                        commande.getCommandDate() + "<br>💰 " + commande.getTotalAmount() + " €</html>");
+                cmdLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                panelCommandes.add(cmdLabel);
             }
         } else {
-            JLabel noCommandesLabel = new JLabel("Aucune commande disponible.");
-            noCommandesLabel.setForeground(Color.RED);
-            noCommandesLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panelCommandes.add(noCommandesLabel);
+            panelCommandes.add(new JLabel("📜 Aucune commande disponible", SwingConstants.CENTER));
         }
     }
 

@@ -2,113 +2,147 @@ package frames;
 
 import entity.ClientEntity;
 import entity.VehicleEntity;
-import service.VehicleService;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class ProductForm extends AbstractFrame {
-    private JPanel pnlProduct; // Contient image + description
-    private JLabel lblTitre; // Titre du produit
-    private JPanel pnlImage; // Panel pour l'image
-    private JPanel pnlDescription; // Panel pour la description
-    private JButton btnAjouterPanier; // Bouton Ajouter au panier
-    private VehicleService vehicleService;
+    private JPanel pnlProduct;
+    private JLabel lblTitre;
+    private JPanel pnlImage;
+    private JPanel pnlDescription;
+    private JButton btnAjouterPanier;
     private VehicleEntity vehicle;
 
     public ProductForm(ClientEntity client, VehicleEntity vehicle) throws IOException {
         super(client);
         this.vehicle = vehicle;
-        System.out.println(vehicle);
+
         initComponents();
 
-        // Ajout des composants principaux au panneau racine
-        pnlRoot.setLayout(new BorderLayout(10, 10)); // Espacement entre les sections
-        pnlRoot.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // Marges extérieures
+        // 🔥 Ajout des composants au panneau principal
+        pnlRoot.setLayout(new BorderLayout(10, 10));
+        pnlRoot.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        pnlRoot.setBackground(new Color(240, 248, 255)); // 💙 Fond bleu clair
 
-        pnlRoot.add(lblTitre, BorderLayout.NORTH); // Titre en haut
-        pnlRoot.add(pnlProduct, BorderLayout.CENTER); // Contenu principal au centre
-        pnlRoot.add(btnAjouterPanier, BorderLayout.SOUTH); // Bouton en bas
+        pnlRoot.add(lblTitre, BorderLayout.NORTH);
+        pnlRoot.add(pnlProduct, BorderLayout.CENTER);
+        pnlRoot.add(btnAjouterPanier, BorderLayout.SOUTH);
 
         this.pack();
-        this.setLocationRelativeTo(null); // Centrer la fenêtre
+        this.setLocationRelativeTo(null);
     }
 
     private void initComponents() throws IOException {
-        // Initialisation du titre
-        lblTitre = new JLabel(vehicle.getModel().getBrandName(), SwingConstants.CENTER);
-        lblTitre.setFont(new Font("Arial", Font.BOLD, 20)); // Style de la police
-        lblTitre.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); // Marges autour du titre
+        // ✅ Titre du produit
+        lblTitre = new JLabel("🚘 " + vehicle.getModel().getModelName(), SwingConstants.CENTER);
+        lblTitre.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitre.setForeground(new Color(50, 50, 50));
+        lblTitre.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        // Panel pour l'image
+        // ✅ Panel pour l'image
         pnlImage = new JPanel(new BorderLayout());
         pnlImage.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        JLabel imageLabel = new JLabel(new ImageIcon(ImageIO.read(getClass().getResource("/images/car.png"))));
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER); // Centrer l'image
+        pnlImage.setBackground(Color.WHITE);
+
+        // 🔥 Ajout de l'image (avec gestion des erreurs)
+        JLabel imageLabel = createImageLabel();
         pnlImage.add(imageLabel, BorderLayout.CENTER);
 
-        // Panel pour la description
-        pnlDescription = new JPanel(new BorderLayout());
-        pnlDescription.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Marges internes
-        JLabel lblPrice = new JLabel("Price: " + vehicle.getPrice() + " €");
-        JLabel lblType = new JLabel("Type: " + vehicle.getClass().getSimpleName());
-        JLabel lblDescription = new JLabel("<html>Description: " + vehicle + "</html>"); // Permet d'afficher un texte multi-ligne
-        lblPrice.setFont(new Font("Arial", Font.PLAIN, 14));
-        lblType.setFont(new Font("Arial", Font.PLAIN, 14));
-        lblDescription.setFont(new Font("Arial", Font.PLAIN, 14));
+        // ✅ Panel pour la description
+        pnlDescription = new JPanel();
+        pnlDescription.setLayout(new BoxLayout(pnlDescription, BoxLayout.Y_AXIS));
+        pnlDescription.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        pnlDescription.setBackground(Color.WHITE);
 
-        // Ajout des descriptions
-        pnlDescription.add(lblPrice, BorderLayout.NORTH); // Prix en haut
-        pnlDescription.add(lblType, BorderLayout.CENTER); // Type au centre
-        pnlDescription.add(lblDescription, BorderLayout.SOUTH); // Description en bas
+        JLabel lblPrice = new JLabel("💰 Prix: " + vehicle.getPrice() + " €");
+        JLabel lblType = new JLabel("🔧 Type: " + vehicle.getVehicleType());
+        JLabel lblYear = new JLabel("📅 Année: " + vehicle.getVehiclePowerSource().toString());
+        JLabel lblDescription = new JLabel("Description : " + vehicle);
 
-        // Panel combinant l'image et la description
-        pnlProduct = new JPanel(new BorderLayout(10, 10)); // Espacement entre l'image et la description
-        pnlProduct.add(pnlImage, BorderLayout.WEST); // Image à gauche
-        pnlProduct.add(pnlDescription, BorderLayout.CENTER); // Description à droite
+        lblPrice.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblPrice.setForeground(new Color(0, 128, 0));
 
-        // Bouton Ajouter au panier
-        btnAjouterPanier = new JButton("Add to Cart");
-        btnAjouterPanier.setFont(new Font("Arial", Font.PLAIN, 16));
-        btnAjouterPanier.addActionListener(e -> {
-            // Action pour ajouter au panier
-            this.getClient().addToPanier(vehicle);
-            System.out.println(vehicle.getModel().getBrandName() + " added to cart!");
-            dispose();
-            try {
-                CatalogForm catalogForm = new CatalogForm(this.getClient());
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+        lblType.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblYear.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblDescription.setFont(new Font("Segoe UI",Font.PLAIN,14));
+
+        pnlDescription.add(lblPrice);
+        pnlDescription.add(Box.createVerticalStrut(10)); // Espacement
+        pnlDescription.add(lblType);
+        pnlDescription.add(Box.createVerticalStrut(10));
+        pnlDescription.add(lblYear);
+        pnlDescription.add(Box.createVerticalStrut(10));
+        pnlDescription.add(lblDescription);
+
+        // ✅ Panel principal (image + description)
+        pnlProduct = new JPanel(new BorderLayout(15, 15));
+        pnlProduct.setBackground(Color.WHITE);
+        pnlProduct.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true));
+        pnlProduct.add(pnlImage, BorderLayout.WEST);
+        pnlProduct.add(pnlDescription, BorderLayout.CENTER);
+
+        // ✅ Bouton Ajouter au Panier
+        btnAjouterPanier = new JButton("🛒 Ajouter au Panier");
+        btnAjouterPanier.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnAjouterPanier.setBackground(new Color(76, 175, 80));
+        btnAjouterPanier.setForeground(Color.WHITE);
+        btnAjouterPanier.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnAjouterPanier.setFocusPainted(false);
+        btnAjouterPanier.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        // ✅ Effet visuel au survol du bouton
+        btnAjouterPanier.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnAjouterPanier.setBackground(new Color(60, 150, 70)); // Assombri au survol
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnAjouterPanier.setBackground(new Color(76, 175, 80)); // Remet la couleur normale
             }
         });
+
+        // ✅ Ajout au panier
+        btnAjouterPanier.addActionListener(e -> addToCart());
     }
 
-//    private JLabel createImageLabel(String imageUrl) {
-//        try {
-//            // Configurer la connexion HTTP
-//            URL url = new URL(imageUrl);
-//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
-//            connection.connect();
-//
-//            // Lire l'image
-//            BufferedImage image = ImageIO.read(connection.getInputStream());
-//            return new JLabel(new ImageIcon(image));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return new JLabel("Image not available");
-//        }
-//    }
+    /**
+     * ✅ Ajoute la voiture au panier et ferme la fenêtre
+     */
+    private void addToCart() {
+        getClient().addToPanier(vehicle);
+        JOptionPane.showMessageDialog(this, "🚘 " + vehicle.getModel().getBrandName() + " ajouté au panier !");
+        dispose();
+        try {
+            new CatalogForm(getClient());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
+    /**
+     * ✅ Charge l'image du véhicule
+     */
+    private JLabel createImageLabel() {
+        try {
+            ImageIcon originalIcon = new ImageIcon(ImageIO.read(getClass().getResource("/images/car.png")));
+
+            // 🔥 Redimensionner l'image à 150x150 px
+            Image resizedImage = originalIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            return new JLabel(new ImageIcon(resizedImage));
+        } catch (IOException | NullPointerException e) {
+            // 🔥 Si l'image ne se charge pas, afficher un emoji
+            JLabel fallbackLabel = new JLabel("🚗", SwingConstants.CENTER);
+            fallbackLabel.setFont(new Font("Segoe UI", Font.BOLD, 50));
+            return fallbackLabel;
+        }
+    }
 
     @Override
     void accountActionPerformed(ActionEvent evt) {
-        // Gérer l'action du compte
+        // 🎯 Gestion de l'action compte (si nécessaire)
     }
 }

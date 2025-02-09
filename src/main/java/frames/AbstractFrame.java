@@ -29,6 +29,8 @@ public abstract class AbstractFrame extends JFrame {
     protected JButton catalogue;
     protected JButton myCart;
 
+    protected JButton myCars;
+
     protected JButton account;
     protected SideMenuPanel sp;
     public AbstractFrame(ClientEntity client){
@@ -73,6 +75,7 @@ public abstract class AbstractFrame extends JFrame {
         sidebar = new JPanel();
         pnlRoot = new JPanel();
         catalogue = new JButton();
+        myCars = new JButton();
         myCart = new JButton();
         home = new JButton();
         account = new JButton();
@@ -139,6 +142,32 @@ public abstract class AbstractFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     myCartActionPerformed(e);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        myCars.setFont(new java.awt.Font("Microsoft PhagsPa", 0, 14)); // NOI18N
+        myCars.setForeground(new java.awt.Color(195, 217, 233));
+        myCars.setIcon(new javax.swing.ImageIcon()); // NOI18N
+        myCars.setText("My Cars");
+        myCars.setBorderPainted(false);
+        myCars.setContentAreaFilled(false);
+        myCars.setFocusPainted(false);
+        myCars.setHideActionText(true);
+        myCars.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        myCars.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        myCars.setIconTextGap(20);
+        myCars.setMargin(new java.awt.Insets(2, 0, 2, 14));
+        myCars.setMinimumSize(new java.awt.Dimension(0, 35));
+        myCars.setPreferredSize(new java.awt.Dimension(50, 574));
+
+        myCars.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    myCarsActionPerformed(e);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -220,6 +249,7 @@ public abstract class AbstractFrame extends JFrame {
                         .addComponent(men, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(catalogue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(myCart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(myCars, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(account, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE) // ✅ Add to horizontal group
         );
@@ -235,6 +265,8 @@ public abstract class AbstractFrame extends JFrame {
                                 .addComponent(catalogue, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(myCart, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(myCars, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(account, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -293,6 +325,12 @@ public abstract class AbstractFrame extends JFrame {
         dispose();
         MyCartForm myCartForm = new MyCartForm(client);
         myCartForm.setVisible(true);
+    }
+
+    private void myCarsActionPerformed(ActionEvent event) throws IOException {
+        dispose();
+        MyCarsForm myCarsForm = new MyCarsForm(client);
+        myCarsForm.setVisible(true);
     }
 
     private void catalogActionPerformed(ActionEvent evt) throws IOException {

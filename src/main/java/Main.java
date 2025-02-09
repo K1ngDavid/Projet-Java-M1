@@ -1,14 +1,14 @@
 import entity.ClientEntity;
 import frames.HomeForm;
+import frames.LoginForm;
 import service.ClientService;
 import tools.JPAUtil;
 
 public class Main {
     public static void main(String[] args) {
         try {
-            ClientService clientService = new ClientService();
-            ClientEntity client = clientService.getClientById(2);
-            new HomeForm(client);
+            LoginForm loginForm = new LoginForm();
+            loginForm.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
