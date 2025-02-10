@@ -38,15 +38,21 @@ public class HomeForm extends AbstractFrame {
         if (client == null) {
             throw new IllegalArgumentException("Le client ne peut pas être null !");
         }
-        commandService = new CommandService();
-        initComponents();
+        if (client.getRole() == ClientEntity.Role.ADMIN) {
+            new AdminDashboardForm(getClient()).setVisible(true);
+            dispose();
+        } else {
+            commandService = new CommandService();
+            initComponents();
 
-        // Lancer le chargement asynchrone des données
-        new DataLoader().execute();
+            // Lancer le chargement asynchrone des données
+            new DataLoader().execute();
 
 
-        this.setLocationRelativeTo(null);
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            this.setLocationRelativeTo(null);
+            this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        }
     }
 
     private void initComponents() {

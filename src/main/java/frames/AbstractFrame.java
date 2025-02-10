@@ -228,6 +228,10 @@ public abstract class AbstractFrame extends JFrame {
         home.setForeground(new java.awt.Color(195, 217, 233));
         home.setIcon(new javax.swing.ImageIcon()); // NOI18N
         home.setText("Home");
+        if(client.getRole() == ClientEntity.Role.ADMIN){
+            home.setText("Dashboard Admin");
+
+        }
         home.setBorderPainted(false);
         home.setContentAreaFilled(false);
         home.setHideActionText(true);

@@ -57,6 +57,24 @@ public class ClientEntity {
         return vehicles;
     }
 
+    // Définition de l'énumération interne pour le rôle
+    public enum Role {
+        CLIENT,
+        ADMIN
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role = Role.CLIENT; // Valeur par défaut
+
     @Basic
     @Column(name = "phoneNumber")
     private String phoneNumber;
