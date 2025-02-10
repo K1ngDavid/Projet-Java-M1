@@ -99,24 +99,25 @@ public class CommandService extends Service {
 
     /**
      * ✅ Met à jour une commande existante.
-     * @param command La commande à mettre à jour
+     * @param commande La commande à mettre à jour
      * @return true si la mise à jour réussit, sinon false
      */
-    public boolean updateCommand(CommandEntity command) {
-        EntityTransaction transaction = entityManager.getTransaction();
+    public void updateCommand(CommandEntity commande) {
+        EntityManager em = getEntityManager();
         try {
-            transaction.begin();
-            entityManager.merge(command);
-            transaction.commit();
-            return true;
+            em.getTransaction().begin();
+            em.merge(commande);
+            em.getTransaction().commit();
         } catch (Exception e) {
-            e.printStackTrace();
-            if (transaction.isActive()) {
-                transaction.rollback();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
             }
-            return false;
+            e.printStackTrace();
+        } finally {
+            em.close();
         }
     }
+
 
     /**
      * ✅ Supprime une commande.

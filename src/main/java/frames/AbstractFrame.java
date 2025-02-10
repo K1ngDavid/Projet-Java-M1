@@ -37,7 +37,6 @@ public abstract class AbstractFrame extends JFrame {
     public AbstractFrame(ClientEntity client){
         this.client = client;
         initComponents();
-        this.pack();
         sp = new SideMenuPanel(this);
         sp.setMain(pnlRoot);
         sp.setSide(sidebar);
@@ -46,8 +45,9 @@ public abstract class AbstractFrame extends JFrame {
         sp.setMainAnimation(true);
         sp.setSpeed(4);
         sp.setResponsiveMinWidth(800);
-
+        this.pack();
         this.setVisible(true);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     public AbstractFrame(){
@@ -333,7 +333,7 @@ public abstract class AbstractFrame extends JFrame {
         );
 
 
-        pnlRoot.setPreferredSize(new Dimension(800,800));
+        pnlRoot.setMinimumSize(new Dimension(800,800));
 
         pack();
         setLocationRelativeTo(null);

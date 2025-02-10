@@ -4,6 +4,7 @@ import entity.ClientEntity;
 import entity.VehicleEntity;
 import service.VehicleService;
 import tools.AdvancedSearchBar;
+import tools.ImageUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -95,7 +96,7 @@ public class MyCarsForm extends AbstractFrame {
         card.setPreferredSize(new Dimension(250, 220));
 
         // Image redimensionnée
-        JLabel imageLabel = createScaledImageLabel(vehicle.getImageUrl(), 200, 150);
+        JLabel imageLabel = new JLabel(ImageUtils.loadAndResizeImage(vehicle.getImageUrl(), 600, 300));
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Nom du véhicule

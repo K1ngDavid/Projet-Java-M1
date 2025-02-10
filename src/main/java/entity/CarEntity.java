@@ -15,18 +15,21 @@ public class CarEntity extends VehicleEntity {
     @Override
     public String toString() {
         return "<html>" +
-                "ID: " + getIdVehicle() + "<br>" +
-                "Status: " + getStatus() + "<br>" +
-                "Prix: " + getPrice() + " €<br>" +
-                "Pays d'origine: " + getCountryOfOrigin() + "<br>" +
-                "Modèle: " + (getModel() != null ? getModel().getModelName() : "N/A") + "<br>" +
-                "Puissance: " + getHorsePower() + " HP<br>" +
-                "Source d'énergie: " + getVehiclePowerSource() + "<br>" +
-                "Type: " + getVehicleType() + "<br>" +
-                "Nombre de portes: " + getNumberOfDoors() + "<br>" +
-                "Transmission: " + getTransmissionType() +
+                "<ul style='margin: 0; padding-left: 20px;'>" +
+                "<li><b>ID:</b> " + getIdVehicle() + "</li>" +
+                "<li><b>Status:</b> " + getStatus() + "</li>" +
+                "<li><b>Prix:</b> " + getPrice() + " €</li>" +
+                "<li><b>Pays d'origine:</b> " + getCountryOfOrigin() + "</li>" +
+                "<li><b>Modèle:</b> " + (getModel() != null ? getModel().getModelName() : "N/A") + "</li>" +
+                "<li><b>Puissance:</b> " + getHorsePower() + " HP</li>" +
+                "<li><b>Source d'énergie:</b> " + getVehiclePowerSource() + "</li>" +
+                "<li><b>Type:</b> " + getVehicleType() + "</li>" +
+                "<li><b>Nombre de portes:</b> " + getNumberOfDoors() + "</li>" +
+                "<li><b>Transmission:</b> " + getTransmissionType() + "</li>" +
+                "</ul>" +
                 "</html>";
     }
+
 
     @Override
     protected String getDefaultImageUrl() {

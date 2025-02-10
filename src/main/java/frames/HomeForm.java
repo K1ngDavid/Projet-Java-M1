@@ -15,6 +15,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
@@ -43,8 +44,9 @@ public class HomeForm extends AbstractFrame {
         // Lancer le chargement asynchrone des données
         new DataLoader().execute();
 
-        this.pack();
+
         this.setLocationRelativeTo(null);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     private void initComponents() {
@@ -368,7 +370,12 @@ public class HomeForm extends AbstractFrame {
         JButton detailsButton = new JButton("Voir plus");
         detailsButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         detailsButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Détails du véhicule " + vehicle.getModel().getModelName());
+            try {
+                new ProductForm(getClient(),vehicle);
+                dispose();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         card.add(detailsButton, BorderLayout.SOUTH);
         return card;

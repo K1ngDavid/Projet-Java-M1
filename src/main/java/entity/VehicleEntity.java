@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import service.VehicleService;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "Vehicle", schema = "LeTresBonCoin")
@@ -17,6 +18,11 @@ public abstract class VehicleEntity {
 
     @Transient
     protected VehicleService vehicleService;
+
+    public List<ReviewEntity> getReviews() {
+        return reviews;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idVehicle")
@@ -24,6 +30,9 @@ public abstract class VehicleEntity {
 
     @Column(name = "status")
     private String status;
+
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ReviewEntity> reviews;
 
     @Column(name = "price")
     private BigDecimal price;

@@ -194,18 +194,26 @@ public class PaymentForm extends AbstractFrame {
             JOptionPane.showMessageDialog(this, "Le CVV doit être composé de 3 chiffres.", "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        // Sauvegarder le numéro de carte si non enregistré
         if (getClient().getCreditCardNumber() == null) {
             getClient().setCreditCardNumber(cardNumber);
         }
+
+        // Pour chaque commande à payer, on met à jour le statut et on persiste la modification
         for (CommandEntity commande : commandsToPay) {
-            commande.markAsPaid();
-            commandService.updateCommand(commande);
+            commande.markAsPaid();  // Change le statut en "Payée"
+            commandService.updateCommand(commande);  // Met à jour en base
         }
+
+        // Afficher le succès et afficher le bouton de téléchargement PDF
         JOptionPane.showMessageDialog(this, "Paiement effectué avec succès ! ✅", "Paiement réussi", JOptionPane.INFORMATION_MESSAGE);
         btnDownloadPDF.setVisible(true);
+
+        // Rafraîchir l'interface (vous pouvez notifier d'autres formulaires ou recharger le modèle)
         revalidate();
         repaint();
     }
+
 
     private void generateInvoicePDF() {
         String fileName = "facture_" + LocalDate.now() + ".pdf";

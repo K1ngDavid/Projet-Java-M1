@@ -21,7 +21,7 @@ public class CatalogForm extends AbstractFrame {
     public CatalogForm(ClientEntity client) {
         super(client);
         this.vehicleService = new VehicleService();
-
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         pnlCatalog = new JPanel(new BorderLayout());
 
         // Récupération de tous les véhicules
@@ -40,6 +40,8 @@ public class CatalogForm extends AbstractFrame {
         this.repaint();
         this.pack();
         this.revalidate();
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
     }
 
     /**
@@ -95,7 +97,7 @@ public class CatalogForm extends AbstractFrame {
         card.setPreferredSize(new Dimension(220, 350));
 
         // Image du véhicule : réduction de la hauteur pour laisser de la place aux autres composants
-        JLabel imageLabel = new JLabel(loadImage(vehicle.getImageUrl(), 180, 120));
+        JLabel imageLabel = new JLabel(ImageUtils.loadAndResizeImage(vehicle.getImageUrl(), 600, 200));
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         imageLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -153,11 +155,6 @@ public class CatalogForm extends AbstractFrame {
     private ImageIcon loadImage(String path, int width, int height) {
         // Utilisez la méthode utilitaire pour redimensionner l'image aux dimensions désirées.
         return ImageUtils.loadAndResizeImage(path, width, height);
-    }
-
-    // Ancienne méthode sans paramètres redéfinie pour compatibilité (optionnelle)
-    private ImageIcon loadImage(String path) {
-        return loadImage(path, 200, 200);
     }
 
     @Override
