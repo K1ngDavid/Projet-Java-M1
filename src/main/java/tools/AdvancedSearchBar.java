@@ -22,6 +22,9 @@ public class AdvancedSearchBar extends JPanel {
     private List<VehicleEntity> allVehicles;
     private Consumer<List<VehicleEntity>> updateResultsCallback;
 
+    // Timer pour le debouncing
+    private Timer searchTimer;
+
     public AdvancedSearchBar(List<VehicleEntity> vehicles, Consumer<List<VehicleEntity>> updateResultsCallback) {
         this.allVehicles = vehicles;
         this.updateResultsCallback = updateResultsCallback;
@@ -50,21 +53,39 @@ public class AdvancedSearchBar extends JPanel {
         add(new JLabel("💰 Prix:"));
         add(priceFilter);
 
-        // 🔥 Ajout des listeners
+        // Ajout des listeners avec debouncing
         searchField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent e) { performSearch(); }
-            @Override public void removeUpdate(DocumentEvent e) { performSearch(); }
-            @Override public void changedUpdate(DocumentEvent e) { performSearch(); }
+            @Override public void insertUpdate(DocumentEvent e) { restartSearchTimer(); }
+            @Override public void removeUpdate(DocumentEvent e) { restartSearchTimer(); }
+            @Override public void changedUpdate(DocumentEvent e) { restartSearchTimer(); }
         });
 
-        typeFilter.addActionListener(e -> performSearch());
-        powerSourceFilter.addActionListener(e -> performSearch());
-        transmissionFilter.addActionListener(e -> performSearch());
-        priceFilter.addActionListener(e -> performSearch());
+        typeFilter.addActionListener(e -> restartSearchTimer());
+        powerSourceFilter.addActionListener(e -> restartSearchTimer());
+        transmissionFilter.addActionListener(e -> restartSearchTimer());
+        priceFilter.addActionListener(e -> restartSearchTimer());
     }
 
     /**
-     * 🎯 Effectue la recherche avec les filtres et met à jour l'interface.
+     * Redémarre le timer de recherche afin d'implémenter le debouncing.
+     * Le filtrage ne sera exécuté qu'après 300 ms d'inactivité.
+     */
+    private void restartSearchTimer() {
+        int delay = 100; // délai en millisecondes
+        if (searchTimer != null && searchTimer.isRunning()) {
+            searchTimer.restart();
+        } else {
+            searchTimer = new Timer(delay, e -> {
+                performSearch();
+                searchTimer.stop();
+            });
+            searchTimer.setRepeats(false);
+            searchTimer.start();
+        }
+    }
+
+    /**
+     * Effectue la recherche avec les filtres et met à jour l'interface via le callback.
      */
     private void performSearch() {
         String query = searchField.getText().trim();

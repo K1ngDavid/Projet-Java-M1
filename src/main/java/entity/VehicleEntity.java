@@ -22,10 +22,6 @@ public abstract class VehicleEntity {
     @Column(name = "idVehicle")
     private int idVehicle;
 
-    @ManyToOne
-    @JoinColumn(name = "ClientEntity_idClient", referencedColumnName = "idClient")
-    private ClientEntity client; // Cette relation pointe vers ClientEntity
-
     @Column(name = "status")
     private String status;
 
@@ -140,14 +136,6 @@ public abstract class VehicleEntity {
 
     public ModelEntity getModel() {
         return model;
-    }
-
-    public ClientEntity getClient() {
-        return client;
-    }
-
-    public void setClient(ClientEntity client) {
-        this.client = client;
     }
 
     public void setModel(ModelEntity model) {
