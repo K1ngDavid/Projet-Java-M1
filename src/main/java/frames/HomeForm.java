@@ -39,8 +39,8 @@ public class HomeForm extends AbstractFrame {
             throw new IllegalArgumentException("Le client ne peut pas être null !");
         }
         if (client.getRole() == ClientEntity.Role.ADMIN) {
-            new AdminDashboardForm(getClient()).setVisible(true);
             dispose();
+            new AdminDashboardForm(getClient()).setVisible(true);
         } else {
             commandService = new CommandService();
             initComponents();
@@ -48,8 +48,6 @@ public class HomeForm extends AbstractFrame {
             // Lancer le chargement asynchrone des données
             new DataLoader().execute();
 
-
-            this.setLocationRelativeTo(null);
             this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         }

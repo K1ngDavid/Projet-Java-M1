@@ -104,6 +104,7 @@ public class ReviewDialog extends JDialog {
         dispose();
         getOwner().revalidate();
         try {
+            super.dispose();
             new ProductForm(client,vehicle);
         } catch (IOException e) {
             throw new RuntimeException(e);

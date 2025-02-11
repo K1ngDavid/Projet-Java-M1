@@ -80,7 +80,7 @@ public class MyCommandsForm extends AbstractFrame {
     private class OrderLoaderWorker extends SwingWorker<List<CommandEntity>, Void> {
         @Override
         protected List<CommandEntity> doInBackground() throws Exception {
-            return getClient().getCommands();
+            return commandService.getAllCommandsByClient(getClient());
         }
         @Override
         protected void done() {

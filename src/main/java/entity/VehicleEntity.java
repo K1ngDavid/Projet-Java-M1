@@ -78,7 +78,7 @@ public abstract class VehicleEntity {
     @Column(name = "vehicleType",insertable=false, updatable=false)
     private VehicleType vehicleType;  // Ajout de l'enum VehicleType
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "vehicule_model_id", referencedColumnName = "idModel", foreignKey = @ForeignKey(name = "FK_Vehicle_Model"))
     private ModelEntity model;
 
@@ -94,10 +94,14 @@ public abstract class VehicleEntity {
     public String getStatus() {
         return status;
     }
-
+    public void setReviews(List<ReviewEntity> reviews) {
+        this.reviews = reviews;
+    }
     public void setStatus(String status) {
         this.status = status;
     }
+
+
 
     public BigDecimal getPrice() {
         return price;

@@ -96,6 +96,44 @@ public class CommandService extends Service {
         }
     }
 
+    public List<CommandEntity> getAllPaidCommands() {
+        try {
+            String hql = "SELECT c FROM CommandEntity c WHERE c.commandStatus = 'Payée'";
+            TypedQuery<CommandEntity> query = entityManager.createQuery(hql, CommandEntity.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<CommandEntity> getAllCommandsByClient(ClientEntity client) {
+        try {
+            String hql = "SELECT c FROM CommandEntity c WHERE c.commandStatus = 'Payée' AND c.client = :client";
+            TypedQuery<CommandEntity> query = entityManager.createQuery(hql, CommandEntity.class);
+            query.setParameter("client", client);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    /**
+     * Récupère toutes les commandes dont le statut est "En attente".
+     *
+     * @return Liste des commandes en attente.
+     */
+    public List<CommandEntity> getAllPendingCommands() {
+        try {
+            String hql = "SELECT c FROM CommandEntity c WHERE c.commandStatus = 'En attente'";
+            TypedQuery<CommandEntity> query = entityManager.createQuery(hql, CommandEntity.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     /**
      * ✅ Met à jour une commande existante.
@@ -113,8 +151,6 @@ public class CommandService extends Service {
                 em.getTransaction().rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close();
         }
     }
 

@@ -27,6 +27,7 @@ public class MyCartForm extends AbstractFrame {
     public MyCartForm(ClientEntity client) throws IOException {
         super(client);
         this.commandService = new CommandService();
+        System.out.println(client.getPanier());
         System.out.println(client.getPanier().getVehicles());
         initComponents();
         loadPendingCommands(); // Charger les commandes en attente
@@ -250,7 +251,9 @@ public class MyCartForm extends AbstractFrame {
      */
     private void cancelCommand(CommandEntity commande) {
         commandService.deleteCommand(commande);
-        if(getClient().getPanier().getIdCommand() == commande.getIdCommand()) getClient().setPanier(null);
+        if(getClient().getPanier() != null && getClient().getPanier().getIdCommand() == commande.getIdCommand()){
+            getClient().setPanier(null);
+        }
         loadPendingCommands();
     }
 

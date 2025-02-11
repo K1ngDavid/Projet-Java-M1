@@ -3,7 +3,7 @@ package entity;
 import jakarta.persistence.*;
 
 
-
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +27,8 @@ public class ClientEntity {
     @Column(name = "name")
     private String name;
 
-    @Transient
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "active_command_id")
     private CommandEntity panier;
 
     @Basic
@@ -168,14 +169,34 @@ public class ClientEntity {
     }
 
     public CommandEntity getPanier() {
-        return panier;
+        if (this.panier == null) {
+            // Créer un nouveau panier avec les informations par défaut
+            this.panier = new CommandEntity();
+            this.panier.setClient(this);
+            this.panier.setCommandStatus("En attente");
+            this.panier.setCommandDate(new Date(System.currentTimeMillis()));
+        }
+        return this.panier;
     }
 
+
+
+    /**
+     * Ajoute un véhicule au panier en créant un CommandLineEntity.
+     */
     public void addToPanier(VehicleEntity vehicle){
+        // Si le panier est null, le créer
+        if(this.panier == null){
+            this.panier = new CommandEntity();
+            this.panier.setClient(this);
+            this.panier.setCommandStatus("En attente");
+            this.panier.setCommandDate(new Date(System.currentTimeMillis()));
+        }
         CommandLineEntity commandLine = new CommandLineEntity();
         commandLine.setVehicle(vehicle);
-        panier.addCommandLine(commandLine);
+        this.panier.addCommandLine(commandLine);
     }
+
 
     public void setPanier(CommandEntity panier) {
         this.panier = panier;

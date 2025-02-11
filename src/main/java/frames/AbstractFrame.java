@@ -153,7 +153,11 @@ public abstract class AbstractFrame extends JFrame {
         myCars.setFont(new java.awt.Font("Microsoft PhagsPa", 0, 14)); // NOI18N
         myCars.setForeground(new java.awt.Color(195, 217, 233));
         myCars.setIcon(new javax.swing.ImageIcon()); // NOI18N
-        myCars.setText("My Cars");
+        if(client.getRole() == ClientEntity.Role.ADMIN){
+            myCars.setText("My Clients");
+        }else{
+            myCars.setText("My Cars");
+        }
         myCars.setBorderPainted(false);
         myCars.setContentAreaFilled(false);
         myCars.setFocusPainted(false);
@@ -352,8 +356,14 @@ public abstract class AbstractFrame extends JFrame {
 
     private void homeActionPerformed(ActionEvent evt){
         dispose();
-        HomeForm homeForm = new HomeForm(client);
-        homeForm.setVisible(true);
+        if(getClient().getRole() == ClientEntity.Role.CLIENT) {
+            HomeForm homeForm = new HomeForm(client);
+            homeForm.setVisible(true);
+        }
+        else {
+            AdminDashboardForm adminDashboardForm = new AdminDashboardForm(client);
+            adminDashboardForm.setVisible(true);
+        }
     }
 
     private void myCartActionPerformed(ActionEvent event) throws IOException {
@@ -364,8 +374,14 @@ public abstract class AbstractFrame extends JFrame {
 
     private void myCarsActionPerformed(ActionEvent event) throws IOException {
         dispose();
-        MyCarsForm myCarsForm = new MyCarsForm(client);
-        myCarsForm.setVisible(true);
+        if(client.getRole() == ClientEntity.Role.ADMIN){
+            MyUsersForm myUsersForm = new MyUsersForm(client);
+            myUsersForm.setVisible(true);
+        }
+        else{
+            MyCarsForm myCarsForm = new MyCarsForm(client);
+            myCarsForm.setVisible(true);
+        }
     }
     private void myCommandsActionPerformed(ActionEvent event) throws IOException {
             dispose();

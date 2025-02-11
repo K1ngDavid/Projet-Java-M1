@@ -202,17 +202,53 @@ public class PaymentForm extends AbstractFrame {
         // Pour chaque commande à payer, on met à jour le statut et on persiste la modification
         for (CommandEntity commande : commandsToPay) {
             commande.markAsPaid();  // Change le statut en "Payée"
-            commandService.updateCommand(commande);  // Met à jour en base
+            if (getClient().getPanier() != null && getClient().getPanier().getIdCommand() == commande.getIdCommand()) {
+                getClient().setPanier(null);
+            }
+            commandService.updateCommand(commande);
         }
 
-        // Afficher le succès et afficher le bouton de téléchargement PDF
+        // Recharger la liste des commandes en attente depuis la base
+        commandsToPay = commandService.getPendingCommands(getClient());
+
+        // Rafraîchir le JTable affichant les commandes
+        refreshTable();
+
+        // Afficher le succès et rendre visible le bouton de téléchargement PDF
         JOptionPane.showMessageDialog(this, "Paiement effectué avec succès ! ✅", "Paiement réussi", JOptionPane.INFORMATION_MESSAGE);
         btnDownloadPDF.setVisible(true);
 
-        // Rafraîchir l'interface (vous pouvez notifier d'autres formulaires ou recharger le modèle)
+        // Rafraîchir l'interface
         revalidate();
         repaint();
     }
+
+    private void refreshTable() {
+        DefaultTableModel model = (DefaultTableModel) tableCommands.getModel();
+        model.setRowCount(0); // Vider le modèle
+
+        for (CommandEntity commande : commandsToPay) {
+            for (CommandLineEntity commandLine : commande.getCommandLines()) {
+                int commandLineId = commandLine.getId().hashCode();
+                String vehicleName = commandLine.getVehicle() != null
+                        ? commandLine.getVehicle().getModel().getModelName()
+                        : "Inconnu";
+                int vehiclePrice = commandLine.getVehicle() != null
+                        ? commandLine.getVehicle().getPrice().intValueExact()
+                        : 0;
+                model.addRow(new Object[]{
+                        commande.getIdCommand(),
+                        commandLineId,
+                        commande.getCommandStatus(),
+                        vehiclePrice,
+                        vehicleName
+                });
+            }
+        }
+        tableCommands.revalidate();
+        tableCommands.repaint();
+    }
+
 
 
     private void generateInvoicePDF() {

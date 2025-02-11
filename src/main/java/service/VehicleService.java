@@ -27,34 +27,6 @@ public class VehicleService extends Service {
         }
     }
 
-//    public List<VehicleEntity> getAllPaidVehicles() {
-//        try {
-//            // On suppose que CommandEntity possède une collection "commandLines" (de type List<CommandLineEntity>)
-//            // et que CommandLineEntity possède une propriété "vehicle".
-//            String hql = "SELECT v FROM CommandLineEntity cl JOIN cl.vehicle v WHERE cl.command.commandStatus = 'Payée'";
-//            TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
-//            List<VehicleEntity> vehicles = query.getResultList();
-//
-//// Regroupe les véhicules par nom de modèle et compte le nombre d'occurrences pour chaque modèle.
-//            Map<String, Long> countByModel = vehicles.stream()
-//                    .collect(Collectors.groupingBy(
-//                            v -> v.getModel() != null ? v.getModel().getModelName() : "Inconnu",
-//                            Collectors.counting()
-//                    ));
-//
-//            // Affiche le résultat dans la console (ou ailleurs selon vos besoins)
-//            countByModel.forEach((model, count) ->
-//                    System.out.println("Modèle : " + model + " - Ventes : " + count)
-//            );
-//
-////            System.out.println(query.getResultList().stream().map(vehicle -> System.out.println()));
-//            return query.getResultList();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
     public Map<String, Long> getSalesCountByVehicle() {
         try {
             String hql = "SELECT v.model.modelName, COUNT(cl) " +
@@ -78,6 +50,23 @@ public class VehicleService extends Service {
         }
     }
 
+
+    /**
+     * Récupère tous les véhicules apparaissant dans les commandes dont le statut est "Payée".
+     * (Les doublons sont conservés, ce qui permet de compter les ventes par véhicule.)
+     *
+     * @return Liste des véhicules vendus.
+     */
+    public List<VehicleEntity> getAllPaidVehicles() {
+        try {
+            String hql = "SELECT cl.vehicle FROM CommandLineEntity cl JOIN cl.command c WHERE c.commandStatus = 'Payée'";
+            TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
 

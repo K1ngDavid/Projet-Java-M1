@@ -6,11 +6,9 @@ import service.VehicleService;
 import tools.AdvancedSearchBar;
 import tools.ImageUtils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -36,7 +34,9 @@ public class MyCarsForm extends AbstractFrame {
     }
 
     @Override
-    void accountActionPerformed(ActionEvent evt) {}
+    void accountActionPerformed(ActionEvent evt) {
+        // Action de retour ou autre selon vos besoins
+    }
 
     /**
      * Initialise l'interface utilisateur.
@@ -61,7 +61,7 @@ public class MyCarsForm extends AbstractFrame {
     }
 
     /**
-     * Met à jour l'affichage des voitures après la recherche.
+     * Met à jour l'affichage des voitures après une recherche.
      */
     private void displayCars(List<VehicleEntity> vehicles) {
         pnlCars.removeAll();
@@ -83,7 +83,8 @@ public class MyCarsForm extends AbstractFrame {
 
     /**
      * Crée une carte d'affichage pour une voiture.
-     * La carte comporte une image redimensionnée, le nom du véhicule, le prix et un bouton "Voir".
+     * Pour un client, la carte affiche un bouton "Voir" qui ouvre la fiche produit.
+     * Pour un admin, la carte affiche des boutons "Modifier" et "Supprimer" pour gérer le véhicule.
      */
     private JPanel createVehicleCard(VehicleEntity vehicle) {
         JPanel card = new JPanel(new BorderLayout());
@@ -92,77 +93,84 @@ public class MyCarsForm extends AbstractFrame {
                 BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
-        // Dimension fixe pour la carte
+        // Dimension fixe pour la carte (vous pouvez adapter ou utiliser un layout plus flexible)
         card.setPreferredSize(new Dimension(250, 220));
 
-        // Image redimensionnée
-        JLabel imageLabel = new JLabel(ImageUtils.loadAndResizeImage(vehicle.getImageUrl(), 600, 300));
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        // Nom du véhicule
+        // En-tête : le nom du véhicule
         JLabel nameLabel = new JLabel("🚗 " + vehicle.getModel().getModelName(), SwingConstants.CENTER);
         nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        card.add(nameLabel, BorderLayout.NORTH);
 
-        // Prix du véhicule
+        // Zone centrale : l'image du véhicule
+        // On utilise ImageUtils pour charger l'image redimensionnée en conservant le ratio.
+        // Ici, nous définissons des dimensions cibles (par exemple 230x120) adaptées à la carte.
+        ImageIcon vehicleIcon = ImageUtils.loadAndResizeImage(vehicle.getImageUrl(), 230, 120);
+        JLabel imageLabel = new JLabel(vehicleIcon, SwingConstants.CENTER);
+        card.add(imageLabel, BorderLayout.CENTER);
+
+        // Pied de carte : affichage du prix et des boutons d'action
         JLabel priceLabel = new JLabel("💰 " + vehicle.getPrice() + " €", SwingConstants.CENTER);
         priceLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         priceLabel.setForeground(new Color(0, 128, 0));
 
-        // Bouton "Voir"
-        JButton btnVoir = new JButton("Voir");
-        styleButton(btnVoir, new Color(76, 175, 80));
-        btnVoir.addActionListener(e -> {
-            try {
-                new ProductForm(getClient(), vehicle).setVisible(true);
-                dispose();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        // Panneau pour les boutons (différents selon le rôle)
+        JPanel pnlActions = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        pnlActions.setBackground(Color.WHITE);
 
-        // Panneau pour le bas de la carte : prix et bouton
+        if (getClient().getRole() == ClientEntity.Role.ADMIN) {
+            // Pour un admin : boutons Modifier et Supprimer
+            JButton btnEdit = new JButton("Modifier");
+            styleButton(btnEdit, new Color(23, 162, 184));
+            btnEdit.addActionListener(e -> {
+                // Ici, vous pouvez ouvrir un formulaire d'édition, par exemple EditVehicleForm
+                JOptionPane.showMessageDialog(this, "Modifier le véhicule (ID: " + vehicle.getIdVehicle() + ")",
+                        "Modification", JOptionPane.INFORMATION_MESSAGE);
+            });
+
+            JButton btnDelete = new JButton("Supprimer");
+            styleButton(btnDelete, new Color(220, 53, 69));
+            btnDelete.addActionListener(e -> {
+                int confirm = JOptionPane.showConfirmDialog(this, "Confirmez-vous la suppression de ce véhicule ?",
+                        "Confirmation", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    boolean deleted = vehicleService.deleteVehicle(vehicle.getIdVehicle());
+                    if (deleted) {
+                        JOptionPane.showMessageDialog(this, "Véhicule supprimé avec succès.",
+                                "Succès", JOptionPane.INFORMATION_MESSAGE);
+                        // Actualisez l'affichage après suppression
+                        displayCars(vehicleService.getAllVehicles());
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Erreur lors de la suppression du véhicule.",
+                                "Erreur", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            });
+
+            pnlActions.add(btnEdit);
+            pnlActions.add(btnDelete);
+        } else {
+            // Pour un client : bouton "Voir"
+            JButton btnView = new JButton("Voir");
+            styleButton(btnView, new Color(76, 175, 80));
+            btnView.addActionListener(e -> {
+                try {
+                    new ProductForm(getClient(), vehicle).setVisible(true);
+                    dispose();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+            pnlActions.add(btnView);
+        }
+
+        // Regrouper le prix et les actions dans un même panneau de bas de carte
         JPanel pnlBottom = new JPanel(new BorderLayout());
         pnlBottom.setBackground(Color.WHITE);
         pnlBottom.add(priceLabel, BorderLayout.NORTH);
-        pnlBottom.add(btnVoir, BorderLayout.SOUTH);
-
-        card.add(nameLabel, BorderLayout.NORTH);
-        card.add(imageLabel, BorderLayout.CENTER);
+        pnlBottom.add(pnlActions, BorderLayout.SOUTH);
         card.add(pnlBottom, BorderLayout.SOUTH);
 
         return card;
-    }
-
-    /**
-     * Crée et retourne un JLabel affichant l'image redimensionnée.
-     *
-     * @param imagePath Chemin absolu de l'image (ex : "/images/monImage.jpg")
-     * @param width     largeur souhaitée
-     * @param height    hauteur souhaitée
-     */
-    private JLabel createScaledImageLabel(String imagePath, int width, int height) {
-        ImageIcon icon;
-        try {
-            URL imgURL = getClass().getResource(imagePath);
-            if (imgURL != null) {
-                icon = new ImageIcon(imgURL);
-            } else {
-                throw new IOException("Image non trouvée : " + imagePath);
-            }
-        } catch (IOException | NullPointerException e) {
-            // Création d'un placeholder
-            BufferedImage placeholder = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = placeholder.createGraphics();
-            g2d.setColor(Color.LIGHT_GRAY);
-            g2d.fillRect(0, 0, width, height);
-            g2d.setColor(Color.BLACK);
-            g2d.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            g2d.drawString("No Image", width / 2 - 30, height / 2);
-            g2d.dispose();
-            icon = new ImageIcon(placeholder);
-        }
-        Image scaledImage = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-        return new JLabel(new ImageIcon(scaledImage), SwingConstants.CENTER);
     }
 
     /**
