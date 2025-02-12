@@ -107,6 +107,17 @@ public class CommandService extends Service {
         }
     }
 
+    public List<CommandEntity> getAllCommands() {
+        try {
+            String hql = "SELECT c FROM CommandEntity c";
+            TypedQuery<CommandEntity> query = entityManager.createQuery(hql, CommandEntity.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public List<CommandEntity> getAllCommandsByClient(ClientEntity client) {
         try {
             String hql = "SELECT c FROM CommandEntity c  WHERE c.client = :client";

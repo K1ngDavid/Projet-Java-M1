@@ -155,6 +155,10 @@ public class MyUsersForm extends AbstractFrame {
             for (int row : selectedRows) {
                 int modelRow = usersTable.convertRowIndexToModel(row);
                 int userId = (int) tableModel.getValueAt(modelRow, 0);
+                if(getClient().getIdClient() == userId){
+                    JOptionPane.showMessageDialog(this, "Vous ne pouvez pas vous supprimez vous même ", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 boolean deleted = clientService.deleteClient(userId);
                 if (!deleted) {
                     JOptionPane.showMessageDialog(this, "Erreur lors de la suppression de l'utilisateur ID " + userId, "Erreur", JOptionPane.ERROR_MESSAGE);

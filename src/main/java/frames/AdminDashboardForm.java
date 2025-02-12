@@ -94,7 +94,7 @@ public class AdminDashboardForm extends AbstractFrame {
         panelDashboard = createPanel("📊 Tableau de Bord", panelBg);
         panelDepenses = createPanel("📈 Dépenses", panelBg);
         panelTopVehicles = createPanel("🚀 Top Véhicules", panelBg);
-        panelPendingOrders = createScrollablePanel("⌛ Commandes en attente", panelBg);
+        panelPendingOrders = createScrollablePanel("⌛ Toutes les commandes", panelBg);
         panelUsers = createScrollablePanel("👥 Utilisateurs et Dépenses", panelBg);
 
         contentPanel.add(panelUsers);
@@ -154,7 +154,7 @@ public class AdminDashboardForm extends AbstractFrame {
      */
     private void loadAdminData() {
         // Charge les commandes payées et en attente, ainsi que les véhicules uniques.
-        paidCommands = commandService.getPaidCommands(getClient());
+        paidCommands = commandService.getAllPaidCommands();
         pendingOrders = commandService.getPendingCommands(getClient());
         uniqueVehicles = vehicleService.getUniqueVehicles();
         updateUsersPanel();
@@ -322,14 +322,17 @@ public class AdminDashboardForm extends AbstractFrame {
     private void updatePendingOrdersPanel() {
         JPanel pendingContent = (JPanel) ((JScrollPane) panelPendingOrders.getComponent(1)).getViewport().getView();
         pendingContent.removeAll();
-        String[] columns = {"ID Commande", "Date", "Montant (€)"};
+        String[] columns = {"ID Commande", "Date", "Montant (€)","Etat","Utilisateur"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
-        List<CommandEntity> pendingOrders = commandService.getPendingCommands(getClient());
+        List<CommandEntity> pendingOrders = commandService.getAllCommands();
         for (CommandEntity order : pendingOrders) {
+            System.out.println(order.getClient());
             model.addRow(new Object[]{
                     order.getIdCommand(),
                     order.getCommandDate(),
-                    order.getTotalAmount()
+                    order.getTotalAmount(),
+                    order.getCommandStatus(),
+                    order.getClient().getName(),
             });
         }
         JTable table = new JTable(model);

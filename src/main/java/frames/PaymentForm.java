@@ -217,7 +217,7 @@ public class PaymentForm extends AbstractFrame {
         // Afficher le succès et rendre visible le bouton de téléchargement PDF
         JOptionPane.showMessageDialog(this, "Paiement effectué avec succès ! ✅", "Paiement réussi", JOptionPane.INFORMATION_MESSAGE);
         btnDownloadPDF.setVisible(true);
-
+        btnConfirmPayment.setEnabled(false);
         // Rafraîchir l'interface
         revalidate();
         repaint();

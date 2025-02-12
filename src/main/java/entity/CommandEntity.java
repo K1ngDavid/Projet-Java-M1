@@ -18,7 +18,7 @@ public class CommandEntity {
     private int idCommand;
 
     @ManyToOne
-    @JoinColumn(name = "idClient", nullable = true)
+    @JoinColumn(name = "idClient",nullable = false)
     private ClientEntity client;
 
     @OneToMany(mappedBy = "command", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
