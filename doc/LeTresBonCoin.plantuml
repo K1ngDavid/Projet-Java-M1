@@ -1,0 +1,77 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Client {
+   active_command_id: int(11)
+   creditCardNumber: varchar(255)
+   cveNumber: varchar(255)
+   email: varchar(255)
+   name: varchar(255)
+   password: varchar(255)
+   phoneNumber: varchar(255)
+   postalAddress: varchar(255)
+   role: enum('admin', 'client')
+   idClient: int(11)
+}
+class Command {
+   commandDate: date
+   commandStatus: varchar(255)
+   idClient: int(11)
+   idCommand: int(11)
+}
+class CommandLine {
+   idCommand: int(11)
+   idVehicle: int(11)
+}
+class Invoice {
+   idCommand: int(11)
+   invoiceDate: date
+   totalAmount: decimal(38,2)
+   idInvoice: int(11)
+}
+class Model {
+   brandName: varchar(255)
+   modelName: varchar(255)
+   idModel: int(11)
+}
+class ReviewEntity {
+   comment: varchar(2000)
+   rating: int(11)
+   reviewDate: date
+   client_idClient: int(11)
+   vehicle_idVehicle: int(11)
+   idReview: bigint(20)
+}
+class Vehicle {
+   engineCapacity: int(11)
+   horse_power: int(11)
+   numberOfDoors: int(11)
+   price: decimal(38,2)
+   vehicule_model_id: int(11)
+   vehicleType: varchar(31)
+   countryOfOrigin: varchar(255)
+   image_url: varchar(255)
+   status: varchar(255)
+   transmissionType: enum('automatic', 'awd', 'cvt', 'four_wheel_drive', 'manual', 'semi_automatic')
+   vehicle_power_source: enum('diesel', 'electric', 'hybrid', 'petrol')
+   idType: int(11)
+   vehicle_category: enum('berline', 'cabriolet', 'classic', 'coupe', 'crossover', 'hatchback', 'minivan', 'motorcycle', 'other', 'pickup', 'sportive', 'supersupersportive', 'suv')
+   idVehicle: int(11)
+}
+class VehicleType {
+   typeName: enum('car', 'motorcycle', 'other', 'van')
+   idType: int(11)
+}
+
+Client        -[#595959,plain]-^  Command      : "active_command_id:idCommand"
+Command       -[#595959,plain]-^  Client       : "idClient"
+CommandLine   -[#595959,plain]-^  Command      : "idCommand"
+CommandLine   -[#595959,plain]-^  Vehicle      : "idVehicle"
+ReviewEntity  -[#595959,plain]-^  Client       : "client_idClient:idClient"
+ReviewEntity  -[#595959,plain]-^  Vehicle      : "vehicle_idVehicle:idVehicle"
+Vehicle       -[#595959,plain]-^  Model        : "vehicule_model_id:idModel"
+Vehicle       -[#595959,plain]-^  VehicleType  : "idType"
+@enduml

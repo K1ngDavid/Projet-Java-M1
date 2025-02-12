@@ -4,6 +4,7 @@ import entity.ClientEntity;
 import entity.CommandEntity;
 import service.ClientService;
 import tools.AddUserDialog;
+import tools.EditUserDialog; // Cette classe doit permettre d'éditer un ClientEntity
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -21,12 +22,12 @@ public class MyUsersForm extends AbstractFrame {
     private JTable usersTable;
     private DefaultTableModel tableModel;
     private JButton btnDelete;
-    private JButton btnViewAccount;
+    private JButton btnEditAccount; // Anciennement btnViewAccount
     private JButton btnAddUser;
 
     public MyUsersForm(ClientEntity admin) {
         super(admin);
-        // On suppose que seul un administrateur peut accéder à cette vue
+        // Seul un administrateur peut accéder à cette vue
         clientService = new ClientService();
         initComponents();
         loadUsersData();
@@ -49,7 +50,6 @@ public class MyUsersForm extends AbstractFrame {
         // Création du modèle de table et de la JTable
         String[] columns = {"ID", "Nom", "Email", "Dépenses (€)", "Rôle"};
         tableModel = new DefaultTableModel(columns, 0) {
-            // Rendre toutes les cellules non éditables
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -92,13 +92,14 @@ public class MyUsersForm extends AbstractFrame {
         btnDelete.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnDelete.addActionListener(this::deleteSelectedUsers);
 
-        btnViewAccount = new JButton("Voir le compte");
-        btnViewAccount.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnViewAccount.setBackground(new Color(23, 162, 184)); // bleu
-        btnViewAccount.setForeground(Color.WHITE);
-        btnViewAccount.setFocusPainted(false);
-        btnViewAccount.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnViewAccount.addActionListener(this::viewSelectedUserAccount);
+        // Bouton modifié : texte "Modifier le compte" et action pour éditer un seul utilisateur
+        btnEditAccount = new JButton("Modifier le compte");
+        btnEditAccount.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnEditAccount.setBackground(new Color(23, 162, 184)); // bleu
+        btnEditAccount.setForeground(Color.WHITE);
+        btnEditAccount.setFocusPainted(false);
+        btnEditAccount.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnEditAccount.addActionListener(this::editSelectedUserAccount);
 
         btnAddUser = new JButton("Ajouter utilisateur");
         btnAddUser.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -109,12 +110,11 @@ public class MyUsersForm extends AbstractFrame {
         btnAddUser.addActionListener(e -> {
             AddUserDialog addUserDialog = new AddUserDialog(this);
             addUserDialog.setVisible(true);
-            // Recharger la table après ajout
             loadUsersData();
         });
 
         actionPanel.add(btnDelete);
-        actionPanel.add(btnViewAccount);
+        actionPanel.add(btnEditAccount);
         actionPanel.add(btnAddUser);
         pnlRoot.add(actionPanel, BorderLayout.SOUTH);
     }
@@ -125,7 +125,6 @@ public class MyUsersForm extends AbstractFrame {
     private void loadUsersData() {
         tableModel.setRowCount(0);
         List<ClientEntity> clients = clientService.getAllClients();
-        // Pour chaque client, calculer le total dépensé
         List<Object[]> data = clients.stream()
                 .map(c -> {
                     BigDecimal totalSpent = c.getCommands().stream()
@@ -155,8 +154,8 @@ public class MyUsersForm extends AbstractFrame {
             for (int row : selectedRows) {
                 int modelRow = usersTable.convertRowIndexToModel(row);
                 int userId = (int) tableModel.getValueAt(modelRow, 0);
-                if(getClient().getIdClient() == userId){
-                    JOptionPane.showMessageDialog(this, "Vous ne pouvez pas vous supprimez vous même ", "Erreur", JOptionPane.ERROR_MESSAGE);
+                if (getClient().getIdClient() == userId) {
+                    JOptionPane.showMessageDialog(this, "Vous ne pouvez pas vous supprimer vous-même.", "Erreur", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 boolean deleted = clientService.deleteClient(userId);
@@ -169,20 +168,23 @@ public class MyUsersForm extends AbstractFrame {
     }
 
     /**
-     * Ouvre le compte de l'utilisateur sélectionné.
-     * Si plusieurs sont sélectionnés, affiche le compte du premier.
+     * Permet à un administrateur de modifier les informations d'un utilisateur.
+     * Si plusieurs utilisateurs sont sélectionnés, affiche une erreur.
      */
-    private void viewSelectedUserAccount(ActionEvent evt) {
-        int selectedRow = usersTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Veuillez sélectionner un utilisateur pour voir son compte.", "Aucune sélection", JOptionPane.WARNING_MESSAGE);
+    private void editSelectedUserAccount(ActionEvent evt) {
+        int[] selectedRows = usersTable.getSelectedRows();
+        if (selectedRows.length != 1) {
+            JOptionPane.showMessageDialog(this, "Veuillez sélectionner un seul utilisateur pour modifier son compte.", "Sélection invalide", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        int modelRow = usersTable.convertRowIndexToModel(selectedRow);
+        int modelRow = usersTable.convertRowIndexToModel(selectedRows[0]);
         int userId = (int) tableModel.getValueAt(modelRow, 0);
         ClientEntity user = clientService.getClientById(userId);
         if (user != null) {
-            new AccountForm(user).setVisible(true);
+            // Ouvre une boîte de dialogue pour modifier les informations du client
+            EditUserDialog editUserDialog = new EditUserDialog(this, user);
+            editUserDialog.setVisible(true);
+            loadUsersData();
         } else {
             JOptionPane.showMessageDialog(this, "Utilisateur non trouvé.", "Erreur", JOptionPane.ERROR_MESSAGE);
         }

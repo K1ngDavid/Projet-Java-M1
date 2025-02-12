@@ -252,9 +252,14 @@ public class PaymentForm extends AbstractFrame {
 
 
     private void generateInvoicePDF() {
-        String fileName = "facture_" + LocalDate.now() + ".pdf";
         try {
-            PdfWriter writer = new PdfWriter(new File(fileName));
+
+            String userHome = System.getProperty("user.home");
+            String downloadsDir = userHome + File.separator + "Téléchargements"; // ou "Téléchargements" selon votre OS
+            String fileName = "facture_" + LocalDate.now() + ".pdf";
+            File outputFile = new File(downloadsDir, fileName);
+
+            PdfWriter writer = new PdfWriter(outputFile);
             PdfDocument pdfDoc = new PdfDocument(writer);
             Document document = new Document(pdfDoc);
 

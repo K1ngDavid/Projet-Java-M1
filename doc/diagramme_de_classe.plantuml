@@ -1,0 +1,210 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class CarEntity {
+  + CarEntity(): 
+  # getDefaultImageUrl(): String
+  + toString(): String
+}
+class ClientEntity {
+  + ClientEntity(): 
+  - panier: CommandEntity
+  - role: Role
+  - idClient: int
+  - cveNumber: String
+  - phoneNumber: String
+  - email: String
+  - postalAddress: String
+  - creditCardNumber: String
+  - password: String
+  - commands: List<CommandEntity>
+  - name: String
+  + setRole(Role): void
+  + getPhoneNumber(): String
+  + toString(): String
+  + getPanier(): CommandEntity
+  + setCveNumber(String): void
+  + getName(): String
+  + getPostalAddress(): String
+  + setPanier(CommandEntity): void
+  + addToPanier(VehicleEntity): void
+  + getVehicles(): List<VehicleEntity>
+  + setIdClient(int): void
+  + setCreditCardNumber(String): void
+  + getCveNumber(): String
+  + getRole(): Role
+  + setPassword(String): void
+  + getPassword(): String
+  + getCreditCardNumber(): String
+  + getEmail(): String
+  + setCommands(List<CommandEntity>): void
+  + setName(String): void
+  + setEmail(String): void
+  + getCommands(): List<CommandEntity>
+  + setPostalAddress(String): void
+  + getIdClient(): int
+  + setPhoneNumber(String): void
+}
+class CommandEntity {
+  + CommandEntity(): 
+  - commandLines: List<CommandLineEntity>
+  - client: ClientEntity
+  - commandDate: Date
+  - idCommand: int
+  - commandStatus: String
+  + getTotalAmount(): BigDecimal
+  + getCommandStatus(): String
+  + setCommandLines(List<CommandLineEntity>): void
+  + getClient(): ClientEntity
+  + getVehicles(): List<VehicleEntity>
+  + setClient(ClientEntity): void
+  + getCommandLines(): List<CommandLineEntity>
+  + setIdCommand(int): void
+  + setCommandDate(Date): void
+  + getIdCommand(): int
+  + getCommandDate(): Date
+  + cancelCommand(): void
+  + setCommandStatus(String): void
+  + markAsPaid(): void
+  + isPending(): boolean
+  + getCommandSummary(): String
+  + addCommandLine(CommandLineEntity): void
+}
+class CommandLineEntity {
+  + CommandLineEntity(): 
+  - id: CommandLineEntityPK
+  - command: CommandEntity
+  - vehicle: VehicleEntity
+  + setVehicle(VehicleEntity): void
+  + getId(): CommandLineEntityPK
+  + getCommand(): CommandEntity
+  + setCommand(CommandEntity): void
+  + setId(CommandLineEntityPK): void
+  + getVehicle(): VehicleEntity
+}
+class CommandLineEntityPK {
+  + CommandLineEntityPK(): 
+  - idCommand: int
+  - idVehicle: int
+  + hashCode(): int
+  + equals(Object): boolean
+  + getIdVehicle(): int
+  + setIdCommand(int): void
+  + setIdVehicle(int): void
+  + getIdCommand(): int
+}
+class ModelEntity {
+  + ModelEntity(): 
+  - modelName: String
+  - idModel: int
+  - brandName: String
+  + getBrandName(): String
+  + equals(Object): boolean
+  + getModelName(): String
+  + setModelName(String): void
+  + setBrandName(String): void
+  + hashCode(): int
+  + getIdModel(): int
+  + setIdModel(int): void
+}
+class MotorcycleEntity {
+  + MotorcycleEntity(): 
+  - engineCapacity: Integer
+  + getEngineCapacity(): Integer
+  + setEngineCapacity(Integer): void
+  + toString(): String
+  # getDefaultImageUrl(): String
+}
+class ReviewEntity {
+  + ReviewEntity(): 
+  - rating: int
+  - comment: String
+  - vehicle: VehicleEntity
+  - idReview: Long
+  - reviewDate: LocalDate
+  - client: ClientEntity
+  + setIdReview(Long): void
+  + setRating(int): void
+  + getReviewDate(): LocalDate
+  + getComment(): String
+  + setReviewDate(LocalDate): void
+  + setClient(ClientEntity): void
+  + setVehicle(VehicleEntity): void
+  + getRating(): int
+  + getVehicle(): VehicleEntity
+  + getIdReview(): Long
+  + setComment(String): void
+  + getClient(): ClientEntity
+}
+enum Role << enumeration >> {
+  + Role(): 
+  + ADMIN: 
+  + CLIENT: 
+  + values(): Role[]
+  + valueOf(String): Role
+}
+class VanEntity {
+  + VanEntity(): 
+}
+class VehicleEntity {
+  + VehicleEntity(): 
+  - numberOfDoors: Integer
+  - reviews: List<ReviewEntity>
+  - countryOfOrigin: String
+  - imageUrl: String
+  - vehicleCategory: VehicleCategory
+  - vehicleType: VehicleType
+  - vehiclePowerSource: PowerSource
+  - price: BigDecimal
+  - model: ModelEntity
+  - horsePower: Integer
+  # vehicleService: VehicleService
+  - idVehicle: int
+  - transmissionType: TransmissionType
+  + setHorsePower(Integer): void
+  + toString(): String
+  + setImageUrl(String): void
+  + getVehiclePowerSource(): PowerSource
+  + prePersist(): void
+  + getTransmissionType(): TransmissionType
+  + getCountryOfOrigin(): String
+  + setPrice(BigDecimal): void
+  + getReviews(): List<ReviewEntity>
+  + getImageUrl(): String
+  + setModel(ModelEntity): void
+  + getIdVehicle(): int
+  + setVehicleCategory(VehicleCategory): void
+  + getModel(): ModelEntity
+  + getHorsePower(): Integer
+  + getVehicleCategory(): VehicleCategory
+  + getVehicleType(): VehicleType
+  + setCountryOfOrigin(String): void
+  + setVehiclePowerSource(PowerSource): void
+  + setReviews(List<ReviewEntity>): void
+  + getPrice(): BigDecimal
+  # getDefaultImageUrl(): String
+  + setTransmissionType(TransmissionType): void
+  + getNumberOfDoors(): Integer
+  + setNumberOfDoors(int): void
+  + setIdVehicle(int): void
+}
+class VehicleTypeEntity {
+  + VehicleTypeEntity(): 
+  - typeName: VehicleType
+  - idType: int
+  + equals(Object): boolean
+  + getTypeName(): VehicleType
+  + setIdType(int): void
+  + setTypeName(VehicleType): void
+  + hashCode(): int
+  + getIdType(): int
+}
+
+CarEntity            -[#000082,plain]-^  VehicleEntity       
+MotorcycleEntity     -[#000082,plain]-^  VehicleEntity       
+Role                 +-[#820000,plain]-  ClientEntity        
+VanEntity            -[#000082,plain]-^  VehicleEntity       
+@enduml
