@@ -5,7 +5,9 @@ import entity.ReviewEntity;
 import entity.VehicleEntity;
 import frames.ProductForm;
 import jakarta.persistence.EntityManager;
+import service.ClientService;
 import service.ReviewService;
+import service.VehicleService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -20,6 +22,7 @@ public class ReviewDialog extends JDialog {
 
     private ClientEntity client;
     private ReviewService reviewService;
+    private VehicleService vehicleService;
     private VehicleEntity vehicle;
     EntityManager entityManager;
 
@@ -28,6 +31,7 @@ public class ReviewDialog extends JDialog {
         this.client = client;
         this.vehicle = vehicle;
         this.reviewService = new ReviewService();
+        vehicleService = new VehicleService();
         initComponents();
         pack();
         setLocationRelativeTo(owner);
@@ -86,6 +90,7 @@ public class ReviewDialog extends JDialog {
             JOptionPane.showMessageDialog(this, "Veuillez entrer un commentaire.", "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
 
         // Création de l'objet Review (assurez-vous que l'entité Review existe et possède les bons champs)
         ReviewEntity review = new ReviewEntity();

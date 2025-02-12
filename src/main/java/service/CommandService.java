@@ -109,6 +109,18 @@ public class CommandService extends Service {
 
     public List<CommandEntity> getAllCommandsByClient(ClientEntity client) {
         try {
+            String hql = "SELECT c FROM CommandEntity c  WHERE c.client = :client";
+            TypedQuery<CommandEntity> query = entityManager.createQuery(hql, CommandEntity.class);
+            query.setParameter("client", client);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<CommandEntity> getAllPaidCommandsByClient(ClientEntity client) {
+        try {
             String hql = "SELECT c FROM CommandEntity c WHERE c.commandStatus = 'Payée' AND c.client = :client";
             TypedQuery<CommandEntity> query = entityManager.createQuery(hql, CommandEntity.class);
             query.setParameter("client", client);
@@ -118,6 +130,8 @@ public class CommandService extends Service {
             return null;
         }
     }
+
+
     /**
      * Récupère toutes les commandes dont le statut est "En attente".
      *

@@ -17,7 +17,6 @@ public class CarEntity extends VehicleEntity {
         return "<html>" +
                 "<ul style='margin: 0; padding-left: 20px;'>" +
                 "<li><b>ID:</b> " + getIdVehicle() + "</li>" +
-                "<li><b>Status:</b> " + getStatus() + "</li>" +
                 "<li><b>Prix:</b> " + getPrice() + " €</li>" +
                 "<li><b>Pays d'origine:</b> " + getCountryOfOrigin() + "</li>" +
                 "<li><b>Modèle:</b> " + (getModel() != null ? getModel().getModelName() : "N/A") + "</li>" +

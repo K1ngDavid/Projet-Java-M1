@@ -2,6 +2,7 @@ package service;
 
 import entity.ClientEntity;
 import entity.CommandEntity;
+import entity.VehicleEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import tools.JPAUtil;
@@ -45,6 +46,7 @@ public class ClientService extends Service {
             return null;
         }
     }
+
 
     /**
      * Récupère les commandes d'un client.

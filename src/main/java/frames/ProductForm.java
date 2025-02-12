@@ -142,7 +142,13 @@ public class ProductForm extends AbstractFrame {
             btnLeaveReview.setFocusPainted(false);
             btnLeaveReview.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
             btnLeaveReview.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
             btnLeaveReview.addActionListener(e -> {
+                if (!vehicleService.getAllPaidVehiclesByClient(getClient()).stream().anyMatch(vehicle1 -> vehicle.getIdVehicle() == vehicle1.getIdVehicle())) {
+                    JOptionPane.showMessageDialog(this, "Vous ne pouvez pas donner un avis sur un véhicule que vous n'avez pas", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 ReviewDialog reviewDialog = new ReviewDialog(this, getClient(), vehicle);
                 reviewDialog.setVisible(true);
                 refreshReviews();
@@ -237,8 +243,6 @@ public class ProductForm extends AbstractFrame {
                     txtPrice = new JTextField(vehicle.getPrice().toString(), 10)));
             pnlFields.add(createFieldPanel("Image URL:",
                     txtImageUrl = new JTextField(vehicle.getImageUrl(), 20)));
-            pnlFields.add(createFieldPanel("Statut:",
-                    txtStatus = new JTextField(vehicle.getStatus(), 15)));
             pnlFields.add(createFieldPanel("Pays d'origine:",
                     txtCountryOfOrigin = new JTextField(vehicle.getCountryOfOrigin(), 15)));
 
@@ -556,7 +560,6 @@ public class ProductForm extends AbstractFrame {
         // Mise à jour des autres champs
         vehicle.setPrice(new BigDecimal(txtPrice.getText()));
         vehicle.setImageUrl(txtImageUrl.getText());
-        vehicle.setStatus(txtStatus.getText());
         vehicle.setCountryOfOrigin(txtCountryOfOrigin.getText());
         vehicle.setVehiclePowerSource((PowerSource) cbPowerSource.getSelectedItem());
         vehicle.setTransmissionType((TransmissionType) cbTransmissionType.getSelectedItem());

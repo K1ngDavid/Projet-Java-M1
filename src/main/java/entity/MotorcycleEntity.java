@@ -28,7 +28,6 @@ public class MotorcycleEntity extends VehicleEntity {
     public String toString() {
         return "<html>" +
                 "ID: " + getIdVehicle() + "<br>" +
-                "Status: " + getStatus() + "<br>" +
                 "Prix: " + getPrice() + " €<br>" +
                 "Pays d'origine: " + getCountryOfOrigin() + "<br>" +
                 "Modèle: " + (getModel() != null ? getModel().getModelName() : "N/A") + "<br>" +

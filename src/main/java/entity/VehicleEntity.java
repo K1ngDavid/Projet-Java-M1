@@ -27,10 +27,6 @@ public abstract class VehicleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idVehicle")
     private int idVehicle;
-
-    @Column(name = "status")
-    private String status;
-
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReviewEntity> reviews;
 
@@ -40,8 +36,15 @@ public abstract class VehicleEntity {
     @Column(name = "countryOfOrigin")
     private String countryOfOrigin;
 
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vehicle_category")
+    private VehicleCategory vehicleCategory;
+
     @Column(name = "image_url")
     private String imageUrl;
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "vehicle_power_source")
@@ -74,33 +77,34 @@ public abstract class VehicleEntity {
     private Integer horsePower;
 
     // Ajout de la colonne vehicleType
-    @Enumerated(EnumType.STRING)
-    @Column(name = "vehicleType",insertable=false, updatable=false)
-    private VehicleType vehicleType;  // Ajout de l'enum VehicleType
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vehicleType",insertable = false,updatable = false)
+    private VehicleType vehicleType;  // Ajout de l'enum VehicleType
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "vehicule_model_id", referencedColumnName = "idModel", foreignKey = @ForeignKey(name = "FK_Vehicle_Model"))
     private ModelEntity model;
 
     // Getters and setters
+
     public int getIdVehicle() {
         return idVehicle;
     }
-
     public void setIdVehicle(int idVehicle) {
         this.idVehicle = idVehicle;
     }
 
-    public String getStatus() {
-        return status;
-    }
     public void setReviews(List<ReviewEntity> reviews) {
         this.reviews = reviews;
     }
-    public void setStatus(String status) {
-        this.status = status;
+
+    public VehicleCategory getVehicleCategory() {
+        return vehicleCategory;
     }
 
+    public void setVehicleCategory(VehicleCategory vehicleCategory) {
+        this.vehicleCategory = vehicleCategory;
+    }
 
 
     public BigDecimal getPrice() {
@@ -173,7 +177,6 @@ public abstract class VehicleEntity {
     public String toString() {
         return "<html>" +
                 "ID: " + getIdVehicle() + "<br>" +
-                "Status: " + getStatus() + "<br>" +
                 "Prix: " + getPrice() + " €<br>" +
                 "Pays d'origine: " + getCountryOfOrigin() + "<br>" +
                 "Modèle: " + (getModel() != null ? getModel().getModelName() : "N/A") + "<br>" +
@@ -184,4 +187,5 @@ public abstract class VehicleEntity {
                 "Transmission: " + getTransmissionType() +
                 "</html>";
     }
+
 }

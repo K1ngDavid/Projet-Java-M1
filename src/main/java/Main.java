@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             ClientService clientService = new ClientService();
-            ClientEntity client = clientService.getClientById(2);
+            ClientEntity client = clientService.getClientById(1);
             HomeForm homeForm = new HomeForm(client);
         } catch (Exception e) {
             e.printStackTrace();

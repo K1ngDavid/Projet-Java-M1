@@ -68,6 +68,18 @@ public class VehicleService extends Service {
         }
     }
 
+    public List<VehicleEntity> getAllPaidVehiclesByClient(ClientEntity client) {
+        try {
+            String hql = "SELECT cl.vehicle FROM CommandLineEntity cl JOIN cl.command c WHERE c.commandStatus = 'Payée' AND cl.command.client = :client";
+            TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
+            query.setParameter("client",client);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 
     /**

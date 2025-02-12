@@ -27,6 +27,7 @@ public class HomeForm extends AbstractFrame {
     private JPanel panelDepenses;
     private JPanel panelVoitures;
     private JPanel panelCommandes;
+    private VehicleService vehicleService;
     private JPanel panelCategories; // Ce panel sera utilisé pour les recommandations
     private JComboBox<String> cbPeriodicity;
 
@@ -42,6 +43,7 @@ public class HomeForm extends AbstractFrame {
             dispose();
             new AdminDashboardForm(getClient()).setVisible(true);
         } else {
+            vehicleService = new VehicleService();
             commandService = new CommandService();
             initComponents();
 
@@ -198,7 +200,7 @@ public class HomeForm extends AbstractFrame {
     private void displayVoitures() {
         JPanel contentPanel = (JPanel) ((JScrollPane) panelVoitures.getComponent(1)).getViewport().getView();
         contentPanel.removeAll();
-        List<VehicleEntity> voitures = getClient().getVehicles();
+        List<VehicleEntity> voitures =vehicleService.getAllPaidVehiclesByClient(getClient()) ;
         if (voitures != null && !voitures.isEmpty()) {
             for (VehicleEntity voiture : voitures) {
                 contentPanel.add(createVehicleCard(voiture));

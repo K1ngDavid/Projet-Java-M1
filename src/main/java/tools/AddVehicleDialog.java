@@ -176,7 +176,6 @@ public class AddVehicleDialog extends JDialog {
             newVehicle.setPrice(price);
             newVehicle.setCountryOfOrigin(country);
             newVehicle.setImageUrl(imageUrl);
-            newVehicle.setStatus(status);
             newVehicle.setNumberOfDoors(numberOfDoors);
             newVehicle.setHorsePower(horsePower);
             newVehicle.setVehiclePowerSource(powerSource);
