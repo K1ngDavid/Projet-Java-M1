@@ -12,7 +12,6 @@ import java.util.List;
 public class ClientEntity {
 
     public ClientEntity(){
-        panier = new CommandEntity();
     }
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -73,7 +72,7 @@ public class ClientEntity {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", nullable = true)
     private Role role = Role.CLIENT; // Valeur par défaut
 
     @Basic

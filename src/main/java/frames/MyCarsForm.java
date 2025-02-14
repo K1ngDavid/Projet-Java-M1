@@ -2,6 +2,7 @@ package frames;
 
 import entity.ClientEntity;
 import entity.VehicleEntity;
+import service.ClientService;
 import service.VehicleService;
 import tools.AdvancedSearchBar;
 import tools.ImageUtils;
@@ -17,10 +18,12 @@ public class MyCarsForm extends AbstractFrame {
     private JPanel pnlCars;
     private VehicleService vehicleService;
 
+    private ClientService clientService;
+
     public MyCarsForm(ClientEntity client) {
         super(client);
         this.vehicleService = new VehicleService();
-
+        this.clientService = new ClientService();
         setTitle("🚗 Mes Voitures");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -57,7 +60,7 @@ public class MyCarsForm extends AbstractFrame {
         pnlRoot.add(scrollPane, BorderLayout.CENTER);
 
         // Affichage initial des véhicules
-        displayCars(getClient().getVehicles());
+        displayCars(clientService.getPaidVehiclesForClient(getClient().getIdClient()));
     }
 
     /**

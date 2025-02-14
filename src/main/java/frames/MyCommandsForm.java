@@ -5,6 +5,7 @@ import entity.CommandEntity;
 import entity.CommandLineEntity;
 import entity.VehicleEntity;
 import service.CommandService;
+import service.ClientService;
 import tools.AdvancedSearchBar;
 
 import javax.imageio.ImageIO;
@@ -23,6 +24,7 @@ public class MyCommandsForm extends AbstractFrame {
     private JPanel pnlOrders;
     private JComboBox<String> cbFilter;
     private CommandService commandService;
+    private ClientService clientService;
 
     // Stockage temporaire des commandes du client
     private List<CommandEntity> orders;
@@ -30,7 +32,7 @@ public class MyCommandsForm extends AbstractFrame {
     public MyCommandsForm(ClientEntity client) {
         super(client);
         this.commandService = new CommandService();
-
+        this.clientService = new ClientService();
         setTitle("📜 Historique des Commandes");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -75,17 +77,24 @@ public class MyCommandsForm extends AbstractFrame {
     }
 
     /**
-     * Charge les commandes du client en arrière-plan via SwingWorker.
+     * SwingWorker pour charger les commandes.
      */
     private class OrderLoaderWorker extends SwingWorker<List<CommandEntity>, Void> {
         @Override
         protected List<CommandEntity> doInBackground() throws Exception {
-            return commandService.getAllCommandsByClient(getClient());
+            // Si le client est admin, récupérer toutes les commandes,
+            // sinon récupérer uniquement celles du client.
+            if (getClient().getRole() == ClientEntity.Role.ADMIN) {
+                return commandService.getAllCommands();
+            } else {
+                return commandService.getAllCommandsByClient(getClient());
+            }
         }
+
         @Override
         protected void done() {
             try {
-                orders = get();
+                orders = get();  // Récupère la liste de commandes depuis doInBackground()
                 loadOrders();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -107,7 +116,8 @@ public class MyCommandsForm extends AbstractFrame {
             pnlOrders.add(lblNoOrders);
         } else {
             for (CommandEntity order : orders) {
-                if (!selectedFilter.equals("Toutes") && !order.getCommandStatus().equals(selectedFilter)) {
+                // Appliquer le filtre si nécessaire
+                if (!"Toutes".equals(selectedFilter) && !order.getCommandStatus().equals(selectedFilter)) {
                     continue;
                 }
                 pnlOrders.add(createOrderPanel(order));
@@ -129,15 +139,25 @@ public class MyCommandsForm extends AbstractFrame {
                 new EmptyBorder(10, 10, 10, 10)
         ));
 
-        // En-tête de la commande (Date et Statut)
+        // En-tête de la commande (Date, Statut et, pour l'admin, le nom du client)
         JPanel pnlHeader = new JPanel(new BorderLayout());
         pnlHeader.setBackground(new Color(230, 230, 230));
-        JLabel lblCommandInfo = new JLabel("📅 " + order.getCommandDate(), SwingConstants.LEFT);
+        JLabel lblCommandInfo = new JLabel("📅 " + order.getCommandDate() + "  ID : " + order.getIdCommand(), SwingConstants.LEFT);
         lblCommandInfo.setFont(new Font("Segoe UI", Font.BOLD, 16));
+
         JLabel lblStatus = new JLabel(order.getCommandStatus(), SwingConstants.RIGHT);
         lblStatus.setFont(new Font("Segoe UI", Font.BOLD, 16));
+
         pnlHeader.add(lblCommandInfo, BorderLayout.WEST);
         pnlHeader.add(lblStatus, BorderLayout.EAST);
+
+        // Si l'utilisateur est admin, afficher le nom du client
+        if (getClient().getRole() == ClientEntity.Role.ADMIN && order.getClient() != null) {
+            JLabel lblClientName = new JLabel("👤 " + order.getClient().getName(), SwingConstants.CENTER);
+            lblClientName.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            pnlHeader.add(lblClientName, BorderLayout.SOUTH);
+        }
+
         panelOrder.add(pnlHeader, BorderLayout.NORTH);
 
         // Liste des véhicules (affichés en miniatures)
@@ -148,15 +168,28 @@ public class MyCommandsForm extends AbstractFrame {
         }
         panelOrder.add(pnlVehicles, BorderLayout.CENTER);
 
-        // Panneau d'actions (Détails et Télécharger Facture)
+        // Panneau d'actions
         JPanel pnlActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 5));
         pnlActions.setBackground(Color.WHITE);
         JButton btnDetails = createStyledButton("🔍 Voir Détails");
         btnDetails.addActionListener(e -> showOrderDetails(order));
+        pnlActions.add(btnDetails);
+
+        // Si l'utilisateur est admin, ajouter les boutons "Modifier" et "Supprimer"
+        if (getClient().getRole() == ClientEntity.Role.ADMIN) {
+            JButton btnEdit = createStyledButton("✏ Modifier");
+            btnEdit.addActionListener(e -> editOrder(order));
+            JButton btnDelete = createStyledButton("🗑 Supprimer");
+            btnDelete.addActionListener(e -> deleteOrder(order));
+            pnlActions.add(btnEdit);
+            pnlActions.add(btnDelete);
+        }
+
+        // Bouton "Télécharger Facture" (disponible pour tous)
         JButton btnDownload = createStyledButton("📄 Télécharger Facture");
         btnDownload.addActionListener(e -> downloadInvoice(order));
-        pnlActions.add(btnDetails);
         pnlActions.add(btnDownload);
+
         panelOrder.add(pnlActions, BorderLayout.SOUTH);
 
         return panelOrder;
@@ -212,24 +245,18 @@ public class MyCommandsForm extends AbstractFrame {
 
     /**
      * Crée et retourne un JLabel affichant l'image redimensionnée.
-     *
-     * @param imagePath Chemin absolu de l'image (ex : "/images/monImage.jpg")
-     * @param width     largeur souhaitée
-     * @param height    hauteur souhaitée
      */
     private JLabel createScaledImageLabel(String imagePath, int width, int height) {
         ImageIcon icon;
         try {
             URL imgURL = getClass().getResource(imagePath);
             if (imgURL != null) {
-                // Utiliser ImageIO pour charger l'image et obtenir un BufferedImage
-                BufferedImage originalImage = javax.imageio.ImageIO.read(imgURL);
+                BufferedImage originalImage = ImageIO.read(imgURL);
                 icon = new ImageIcon(scaleImage(originalImage, width, height));
             } else {
                 throw new IOException("Image non trouvée : " + imagePath);
             }
         } catch (IOException | NullPointerException e) {
-            // Création d'un placeholder
             BufferedImage placeholder = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = placeholder.createGraphics();
             g2d.setColor(Color.LIGHT_GRAY);
@@ -276,6 +303,58 @@ public class MyCommandsForm extends AbstractFrame {
 
     private void downloadInvoice(CommandEntity order) {
         JOptionPane.showMessageDialog(this, "📄 Facture téléchargée pour la commande #" + order.getIdCommand(), "Téléchargement", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // Méthode appelée pour l'édition d'une commande (pour l'admin)
+    private void editOrder(CommandEntity order) {
+        // Vous pouvez créer une nouvelle fenêtre/formulaire pour éditer la commande.
+        JOptionPane.showMessageDialog(this, "Fonctionnalité d'édition pour la commande #" + order.getIdCommand(), "Modifier Commande", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // Méthode appelée pour la suppression d'une commande (pour l'admin)
+// Méthode appelée pour la suppression d'une commande (pour l'admin)
+    private void deleteOrder(CommandEntity order) {
+        int response = JOptionPane.showConfirmDialog(
+                this,
+                "Êtes-vous sûr de vouloir supprimer la commande #" + order.getIdCommand() + " ?",
+                "Confirmer la suppression",
+                JOptionPane.YES_NO_OPTION
+        );
+        if (response == JOptionPane.YES_OPTION) {
+            try {
+                // Retirer la commande de la collection du client
+                ClientEntity client = order.getClient();
+                if (client != null && client.getCommands() != null) {
+                    client.getCommands().remove(order);
+                }
+                // Supprimer la commande dans la base de données
+                if (commandService.deleteCommand(order)) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Commande supprimée avec succès.",
+                            "Suppression réussie",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                    // Recharger les commandes après suppression
+                    new OrderLoaderWorker().execute();
+                } else {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Erreur lors de la suppression de la commande.",
+                            "Erreur",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Erreur lors de la suppression de la commande : " + ex.getMessage(),
+                        "Erreur",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
     }
 
 }

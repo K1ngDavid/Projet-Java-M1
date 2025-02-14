@@ -20,7 +20,6 @@ public class CommandEntity {
     @ManyToOne
     @JoinColumn(name = "idClient",nullable = false)
     private ClientEntity client;
-
     @OneToMany(mappedBy = "command", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<CommandLineEntity> commandLines;
 

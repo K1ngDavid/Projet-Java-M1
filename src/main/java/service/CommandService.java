@@ -186,23 +186,37 @@ public class CommandService extends Service {
      * @return true si la suppression réussit, sinon false
      */
     public boolean deleteCommand(CommandEntity command) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
-            if (!entityManager.contains(command)) {
-                command = entityManager.merge(command); // ✅ Assurer la bonne gestion par Hibernate
+            entityManager.getTransaction().begin();
+            CommandEntity commandEntity = entityManager.find(CommandEntity.class, command.getIdCommand());
+            if (commandEntity != null) {
+                // Retirer la commande de la liste des commandes du client
+                ClientEntity client = commandEntity.getClient();
+                if (client != null && client.getCommands() != null) {
+                    client.getCommands().remove(commandEntity);
+                }
+                // Si la commande supprimée est le panier, la dissocier
+                if (client != null && client.getPanier() != null &&
+                        client.getPanier().getIdCommand() == commandEntity.getIdCommand()) {
+                    client.setPanier(null);
+                }
+                entityManager.remove(commandEntity);
+                entityManager.getTransaction().commit();
+                return true;
             }
-            entityManager.remove(command);
-            transaction.commit();
-            return true;
+            entityManager.getTransaction().rollback();
+            return false;
         } catch (Exception e) {
             e.printStackTrace();
-            if (transaction.isActive()) {
-                transaction.rollback();
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
             }
             return false;
         }
     }
+
+
+
 
     public CommandEntity getLastPendingCommand(ClientEntity client) {
         try {

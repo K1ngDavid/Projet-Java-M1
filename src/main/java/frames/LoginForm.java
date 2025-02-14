@@ -98,6 +98,8 @@ public class LoginForm extends JFrame {
 
         pnlLogin.add(glassPanel);
 
+        sInscrireButton.addActionListener(e -> {new RegisterForm(); dispose();});
+
         // ✅ Organisation des panels
         pnlRoot.add(pnlImage, BorderLayout.WEST);
         pnlRoot.add(pnlLogin, BorderLayout.CENTER);

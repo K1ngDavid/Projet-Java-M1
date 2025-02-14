@@ -145,7 +145,7 @@ public class RegisterForm extends JFrame {
             client.setName(username);
             client.setEmail(email);
             client.setPassword(password);
-
+            client.setRole(ClientEntity.Role.CLIENT);
             clientService.addClient(client);
             JOptionPane.showMessageDialog(this, "🎉 Inscription réussie !", "Succès", JOptionPane.INFORMATION_MESSAGE);
             dispose();

@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import tools.JPAUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientService extends Service {
@@ -197,6 +198,22 @@ public class ClientService extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public List<VehicleEntity> getPaidVehiclesForClient(int clientId) {
+        try {
+            String jpql = "SELECT DISTINCT cl.vehicle " +
+                    "FROM CommandEntity c " +
+                    "JOIN c.commandLines cl " +
+                    "WHERE c.commandStatus = 'Payée' " +
+                    "AND c.client.idClient = :clientId";
+            TypedQuery<VehicleEntity> query = entityManager.createQuery(jpql, VehicleEntity.class);
+            query.setParameter("clientId", clientId);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }

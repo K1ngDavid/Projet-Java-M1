@@ -9,6 +9,7 @@ import entity.ClientEntity;
 import entity.CommandEntity;
 import entity.CommandLineEntity;
 import entity.VehicleEntity;
+import service.ClientService;
 import service.CommandService;
 
 import javax.swing.*;
@@ -26,6 +27,7 @@ public class PaymentForm extends AbstractFrame {
     private JPanel pnlPayment;
     private List<CommandEntity> commandsToPay;
     private CommandService commandService;
+    private ClientService clientService;
 
     private JTextField txtCardNumber;
     private JPasswordField txtCVV;
@@ -33,12 +35,15 @@ public class PaymentForm extends AbstractFrame {
     private JButton btnDownloadPDF;
     private JTable tableCommands;
 
+    private List<CommandEntity> commandsHistoric;
+
     public PaymentForm(ClientEntity client, List<CommandEntity> commandsToPay) {
         super(client);
         pnlRoot.setLayout(new BorderLayout());
         this.commandsToPay = commandsToPay;
         this.commandService = new CommandService();
-
+        this.clientService = new ClientService();
+        commandsHistoric = commandsToPay;
         setTitle("💳 Paiement Sécurisé");
 
         initUI();
@@ -202,6 +207,7 @@ public class PaymentForm extends AbstractFrame {
         // Pour chaque commande à payer, on met à jour le statut et on persiste la modification
         for (CommandEntity commande : commandsToPay) {
             commande.markAsPaid();  // Change le statut en "Payée"
+            getClient().getVehicles().addAll(commande.getVehicles());
             if (getClient().getPanier() != null && getClient().getPanier().getIdCommand() == commande.getIdCommand()) {
                 getClient().setPanier(null);
             }
@@ -271,9 +277,10 @@ public class PaymentForm extends AbstractFrame {
             document.add(new Paragraph("Date : " + LocalDate.now()).setFontSize(12));
 
             document.add(new Paragraph("\n🔹 Commandes Payées :"));
-            for (CommandEntity commande : commandsToPay) {
+            for (CommandEntity commande : commandsHistoric) {
                 document.add(new Paragraph("Commande #" + commande.getIdCommand() + " - Montant : " + commande.getTotalAmount() + " €").setBold());
                 for (VehicleEntity vehicle : commande.getVehicles()) {
+                    System.out.println(vehicle);
                     document.add(new Paragraph("  • " + vehicle.getModel().getBrandName() + " " + vehicle.getModel().getModelName() + " - " + vehicle.getPrice() + " €"));
                 }
             }

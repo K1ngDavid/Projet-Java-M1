@@ -119,17 +119,7 @@ public class VehicleService extends Service {
      * @param client L'entité ClientEntity.
      * @return Liste des véhicules du client.
      */
-    public List<VehicleEntity> getVehiclesByClient(ClientEntity client) {
-        try {
-            String hql = "SELECT v FROM VehicleEntity v WHERE v.client.idClient = :clientId";
-            TypedQuery<VehicleEntity> query = entityManager.createQuery(hql, VehicleEntity.class);
-            query.setParameter("clientId", client.getIdClient());
-            return query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+
 
     /**
      * Ajoute un nouveau véhicule à la base de données.
